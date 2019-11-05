@@ -117,6 +117,7 @@ def plotBox(start, stop, yPos, xSpan, strand, color, xref, yref):
     return(res)    
 
 def get_signal(chr_, start_, stop_, files_, samples_, strand_, scale_, coeff_):
+    print(files_)
     signal = np.array([0]*(stop_-start_))    
     n_samples = np.shape(samples_)[0]
     if np.shape(coeff_) == ():
@@ -124,12 +125,12 @@ def get_signal(chr_, start_, stop_, files_, samples_, strand_, scale_, coeff_):
     for i in range(0,n_samples):
         if strand_ == 'both':
             for str_ in ['F', 'R']:
-                file = wd + "/data/" + files_[i] + "_" + chr + "_" + str_ + "_strand_raw.bw"
+                file = wd + "/data/" + files_[i] + "_" + chr + "_" + str_ + "_strand.bw"
                 bw = pyBigWig.open(file)
                 signal = signal + np.array(bw.values(chr_, start_, stop_))*float(coeff_[i])
                 bw.close()
         else:
-            file = wd + "/data/" + samples_[i] + "_" + chr + "_" + strand_ + "_strand_raw.bw"
+            file = wd + "/data/" + files_[i] + "_" + chr + "_" + strand_ + "_strand.bw"
             bw = pyBigWig.open(file)
             signal = signal + np.array(bw.values(chr_, start_, stop_))*float(coeff_[i])
             bw.close()
@@ -509,7 +510,7 @@ if visu == 'heatmap':
     }
     
     if libType != 'unstranded':
-        if yPos[0] == '':
+        if len(yPos) == 0:
             xaxis_ = 'x3'
             yaxis_ = 'y3'
         else:
@@ -619,7 +620,7 @@ if visu == 'lines':
     margin_in = 50
     plot_height = 600
 
-    if yPos[0] != '':
+    if len(yPos) != 0:
         
         annot_height = max(yPos)*75
         window_height = margin_out*2 + plot_height + margin_in + annot_height
@@ -706,7 +707,7 @@ if visu == "heatmap":
     else : 
         legend_title = 'log2 tag/nt'
    
-    if yPos[0] != '':
+    if len(yPos) != 0:
            
         margin_in = 50
         annot_height = max(yPos)*75                      
@@ -965,7 +966,7 @@ if visu == "fill":
         for i in range(0, len(samples)):
             samples_labels[i] = 'log2 ' + samples[i]
     
-    if yPos[0] != '':
+    if len(yPos) != 0:
         
         annot_height = max(yPos)*75
         window_height = (len(samples) + 1)*margin_in + len(samples)*plot_height + margin_in + annot_height
@@ -1004,7 +1005,7 @@ if visu == "fill":
             'title' : {'text' : samples_labels[i]}
         }
         
-    if yPos[0] != '':
+    if len(yPos) != 0:
         
         xaxis_ = 'xaxis'+str(len(samples)+1)    
         yaxis_ = 'yaxis'+str(len(samples)+1)
