@@ -233,16 +233,16 @@ if scale == 'linear':
 else:
     zmax = round(np.log2(maxSignal))
 
-wd = '/home/ugo/ANALYSES/NCRNA_CELL_CYCLE/for_server/'
-chr="chr01"
-start = 1000
-stop = 1100
-samples = ['mre11.G1.2']
-visu = "lines"
-scale="log"
-libType="standard"
-normalized=True
-maxSignal=65000
+#wd = '/home/ugo/Documents/CURIE/python_javascript/'
+#chr="chr15"
+#start = 1000
+#stop = 1100
+#samples = ['WT_P_MYC_IP-1','WT_P_MYC_IP-2']
+#visu = "heatmap"
+#scale="log"
+#libType="unstranded"
+#normalized="True"
+#maxSignal=65000
 
 ##########################
 #  get description_data  #
@@ -282,45 +282,57 @@ style_file = wd + "/data/style.tab"
 style = np.genfromtxt(style_file, dtype = None, delimiter = "\t", comments='##')
 
 # select annotation features to plot
-annot = ['']
-parking = np.array([-1]*(stop-start))
-yPos = ['']
+annot = []
+parking = [np.array([0]*(stop-start))]
+yPos = []
 start_ = 0
 stop_ = 0
-id = ['']
+id = []
 
 for i in range(1,len(tmp)):
     if tmp[i][0] == chr:
         if tmp[i][4] > tmp[i][3]: 
             if int(tmp[i][3]) < stop and int(tmp[i][4]) > start:                    
-                if len(annot[0]) == 0:
-                    annot[0] = tmp[i]
-                else:
-                    annot.append(tmp[i])
+                
+                annot.append(tmp[i])
+                    
                 if int(tmp[i][3]) < start:
                     start_ = 0
                 else:
                     start_= int(tmp[i][3]) - start
+
                 if int(tmp[i][4]) > stop:
                     stop_ = stop - start -1
                 else:
                     stop_ = int(tmp[i][4]) - start
-                if yPos[0] == '':
-                    yPos[0] = max(parking[start_:stop_])+1  
-                else:
-                    yPos.append(max(parking[start_:stop_])+1)
+
+                yPos_ = -1
+                j = 0
+                while yPos_ == -1:
+                    if max(parking[j][start_:stop_]) == 0:
+                        yPos_ = j
+                        parking[j][(start_):(stop_)] = parking[j][(start_):(stop_)] + [1]*(stop_-start_)
+                    else:
+                        j = j+1
+                        if j == (len(parking)):
+                            yPos_ = j+1 
+                            parking.append(np.array([0]*(stop-start)))
+                            parking[j][(start_):(stop_)] = parking[j][(start_):(stop_)] + [1]*(stop_-start_)
+                                       
+                
+                yPos.append(yPos_+1)                
+                
                 if tmp[i][9] == '':
                     i_id = 8
                 else:
                     i_id = 9
-                if id[0] == '':
-                    id[0] = tmp[i][i_id]
-                else:
-                    id.append(tmp[i][i_id])
-                parking[(start_):(stop_)] = [yPos[len(yPos)-1]]*(stop_-start_)
+                    
+                id.append(tmp[i][i_id])
+                    
+                
 
 # get data for annotation plot
-if yPos[0] != '':    
+if len(yPos) != 0:    
     xSpan = stop - start    
     types = style[:,0].tolist()
     xText = ['']*len(id)
@@ -379,13 +391,18 @@ if yPos[0] != '':
 #   line visualization   #
 ##########################                       
 if visu == 'lines': 
+# get signal
     data = ['']
+
     samples_labels = ['']*len(samples)
+    
     for i in range(0,len(samples)):
         if scale == 'log':
             samples_labels[i] = 'log2 ' + samples[i]
         else:
             samples_labels[i] = samples[i]
+    
+    
     for i in range(0,len(samples)):
         i_samples = description_data[which_samples[i],1]
         if np.shape(i_samples) == ():         
@@ -400,7 +417,7 @@ if visu == 'lines':
         else:
             coeff = ['1']*len(i_samples)
         if libType == 'unstranded':                
-            signal = get_signal(chr, start, stop, i_samples, 'both', scale, float(coeff)) 
+            signal = get_signal(chr, start, stop, i_samples, 'both', scale, coeff) 
             trace = {'x' : range(start,stop), 
                      'y' : signal,
                      'mode' : 'lines',
@@ -409,7 +426,8 @@ if visu == 'lines':
                                'dash' : lty
                               }
                     }
-            data.append(trace)     
+            data.append(trace)
+            
         else:
             for str_ in ['F', 'R']:
                 if libType == 'inverse' and str == 'F':
@@ -421,9 +439,14 @@ if visu == 'lines':
                     show_legend = False
                 else:
                     show_legend = 'true'
+                if i == 0:
+                    legendgroup='group'
+                else:
+                    legendgroup='group'+str(i)
                 trace = {'x' : range(start, stop), 
                          'y' : signal,
                          'mode' : 'lines',
+                         'legendgroup' : legendgroup,
                          'showlegend': show_legend,
                          'name' : samples_labels[i],
                          'line' : {'color' : col,
@@ -582,9 +605,14 @@ if visu == 'fill':
 ################
 #  get layout  #    
 ################
+
+# plot margin
+margins_out = { 'l': 100,'r': 100,'b': 100,'t': 100 }
+    
+    
 if visu == 'lines':
     
-    margin_out = 50
+    margin_out = 0
     margin_in = 50
     plot_height = 600
 
@@ -633,12 +661,7 @@ if visu == 'lines':
             },
             'grid': {'rows': 2, 'columns': 1, 'pattern': 'independent'},
             'shapes':shapes_annot,
-            'margin': { 
-                'l': 25,
-                'r': 25,
-                'b': 50,
-                't': 25
-            }
+            'margin': margins_out
         }
   
         data.append(textAnnot)    
@@ -663,12 +686,7 @@ if visu == 'lines':
                 'domain' : [start_1, stop_1],
                 'anchor' : 'x'
             },
-            'margin': { 
-                'l': 25,
-                'r': 25,
-                'b': 50,
-                't': 25
-            }
+            'margin': margins_out
         }
     
     res = [data, layout, window_height]
@@ -677,7 +695,7 @@ if visu == 'lines':
 if visu == "heatmap":
 
     margin_out = 50
-    plot_height = 100 * len(samples)    
+    plot_height = 50 * len(samples)    
     
     legend_height = 50        
     if scale == 'linear':
@@ -765,12 +783,7 @@ if visu == "heatmap":
                },
                 'grid': {'rows': 3, 'columns': 1, 'pattern': 'independent'},
                 'shapes':shapes_annot,
-                'margin': { 
-                    'l': 25,
-                    'r': 25,
-                    'b': 50,
-                    't': 25
-                }
+                'margin': margins_out
             }
         else:
 
@@ -834,12 +847,7 @@ if visu == "heatmap":
                 },
                 'grid': {'rows': 2, 'columns': 1, 'pattern': 'independent'},
                 'shapes':shapes_annot,
-                'margin': { 
-                    'l': 25,
-                    'r': 25,
-                    'b': 50,
-                    't': 25
-                }
+                'margin': margins_out
             }
     else : 
         
@@ -897,12 +905,7 @@ if visu == "heatmap":
                     'title' : '- strand'
                 },
                 'grid': {'rows': 2, 'columns': 1, 'pattern': 'independent'},
-                'margin': { 
-                    'l': 25,
-                    'r': 25,
-                    'b': 50,
-                    't': 25
-                }
+                'margin': margins_out
             }
         else : 
             
@@ -941,12 +944,7 @@ if visu == "heatmap":
                     'domain' : [start_2, stop_2],
                     'anchor' : 'x2'
                 },
-                'margin': { 
-                    'l': 25,
-                    'r': 25,
-                    'b': 50,
-                    't': 25
-                }
+                'margin': margins_out
             }
                 
     
@@ -955,8 +953,7 @@ if visu == "heatmap":
     
 if visu == "fill":
     
-    margin_out = 200
-    margin_in = 100
+    margin_in = 50
     plot_height = 200     
         
     samples_labels = ['']*len(samples)
@@ -968,9 +965,8 @@ if visu == "fill":
     if yPos[0] != '':
         
         annot_height = max(yPos)*75
-        window_height = (len(samples) + 1)*margin_out + len(samples)*plot_height + margin_in + annot_height
+        window_height = (len(samples) + 1)*margin_in + len(samples)*plot_height + margin_in + annot_height
         
-        margin_out_frac = float(margin_out)/window_height
         margin_in_frac = float(margin_in)/window_height
         plot_height_frac = float(plot_height)/window_height
         annot_height_frac = float(annot_height)/window_height        
@@ -979,9 +975,8 @@ if visu == "fill":
         
     else:
         
-        window_height = (len(samples) + 1)*margin_out + len(samples)*plot_height
+        window_height = (len(samples) + 1)*margin_in + len(samples)*plot_height
         
-        margin_out_frac = float(margin_out)/window_height
         plot_height_frac = float(plot_height)/window_height   
     
     layout = {}
@@ -997,7 +992,7 @@ if visu == "fill":
             'anchor' : 'y'+str(i+1)
         }
 
-        domain_start = 1-(margin_out_frac + plot_height_frac)*(i+1)
+        domain_start = 1-(margin_in_frac + plot_height_frac)*(i+1)
         domain_stop = domain_start + plot_height_frac
 
         layout[yaxis_] = {
@@ -1011,7 +1006,7 @@ if visu == "fill":
         xaxis_ = 'xaxis'+str(len(samples)+1)    
         yaxis_ = 'yaxis'+str(len(samples)+1)
         
-        domain_start = 1-(plot_height_frac*len(samples) + annot_height_frac + margin_out_frac*len(samples)+ margin_in_frac)  
+        domain_start = 1-(plot_height_frac*len(samples) + annot_height_frac + margin_in_frac*len(samples)+ margin_in_frac)  
         domain_stop = domain_start + annot_height_frac        
         
         layout[xaxis_] = {
@@ -1046,12 +1041,7 @@ if visu == "fill":
     
     
     layout['showlegend'] = False    
-    layout['margin'] = { 
-        'l': 25,
-        'r': 25,
-        'b': 50,
-        't': 25
-    }
+    layout['margin'] = margins_out
     
     res = [data, layout, window_height]
     print(json.dumps(res, separators=(',',':')))
