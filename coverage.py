@@ -116,7 +116,7 @@ def plotBox(start, stop, yPos, xSpan, strand, color, xref, yref):
     }
     return(res)    
 
-def get_signal(chr_, start_, stop_, samples_, strand_, scale_, coeff_):
+def get_signal(chr_, start_, stop_, files_, samples_, strand_, scale_, coeff_):
     signal = np.array([0]*(stop_-start_))    
     n_samples = np.shape(samples_)[0]
     if np.shape(coeff_) == ():
@@ -124,7 +124,7 @@ def get_signal(chr_, start_, stop_, samples_, strand_, scale_, coeff_):
     for i in range(0,n_samples):
         if strand_ == 'both':
             for str_ in ['F', 'R']:
-                file = wd + "/data/" + samples_[i] + "_" + chr + "_" + str_ + "_strand_raw.bw"
+                file = wd + "/data/" + files_[i] + "_" + chr + "_" + str_ + "_strand_raw.bw"
                 bw = pyBigWig.open(file)
                 signal = signal + np.array(bw.values(chr_, start_, stop_))*float(coeff_[i])
                 bw.close()
@@ -404,6 +404,7 @@ if visu == 'lines':
     
     
     for i in range(0,len(samples)):
+        i_files = description_data[which_samples[i],0]
         i_samples = description_data[which_samples[i],1]
         if np.shape(i_samples) == ():         
             i_samples = [i_samples]
@@ -417,7 +418,7 @@ if visu == 'lines':
         else:
             coeff = ['1']*len(i_samples)
         if libType == 'unstranded':                
-            signal = get_signal(chr, start, stop, i_samples, 'both', scale, coeff) 
+            signal = get_signal(chr, start, stop, i_files, i_samples, 'both', scale, coeff) 
             trace = {'x' : range(start,stop), 
                      'y' : signal,
                      'mode' : 'lines',
@@ -434,7 +435,7 @@ if visu == 'lines':
                     str_ = 'R'
                 if libType == 'inverse' and str == 'R':
                     str_ = 'F'
-                signal = get_signal(chr, start, stop, i_samples, str_, scale, coeff)  
+                signal = get_signal(chr, start, stop, i_files, i_samples, str_, scale, coeff)  
                 if str_ == 'R':
                     show_legend = False
                 else:
@@ -465,6 +466,7 @@ if visu == 'heatmap':
     matPlus = ['']*len(samples)
     matMinus = ['']*len(samples)
     for i in range(0,len(samples)):
+        i_files = description_data[which_samples[i],0]
         i_samples = description_data[which_samples[i],1]
         if np.shape(i_samples) == ():         
             i_samples = [i_samples]
@@ -473,15 +475,15 @@ if visu == 'heatmap':
         else:
             coeff = ['1']*len(i_samples)
         if libType == 'unstranded':
-            matPlus[i] = get_signal(chr, start, stop, i_samples, 'both', scale, coeff)
+            matPlus[i] = get_signal(chr, start, stop, i_files, i_samples, 'both', scale, coeff)
             nb_row = 2
         else:
             if libType == 'inverse':
-                matPlus[i] = (-np.array(get_signal(chr, start, stop, i_samples, 'R', scale, coeff))).tolist()
-                matMinus[i] = get_signal(chr, start, stop, i_samples, 'F', scale, coeff)
+                matPlus[i] = (-np.array(get_signal(chr, start, stop, i_files, i_samples, 'R', scale, coeff))).tolist()
+                matMinus[i] = get_signal(chr, start, stop, i_files, i_samples, 'F', scale, coeff)
             else:
-                matPlus[i] =  get_signal(chr, start, stop, i_samples, 'F', scale, coeff)
-                matMinus[i] = (-np.array(get_signal(chr, start, stop, i_samples, 'R', scale, coeff))).tolist() 
+                matPlus[i] =  get_signal(chr, start, stop, i_files, i_samples, 'F', scale, coeff)
+                matMinus[i] = (-np.array(get_signal(chr, start, stop, i_files, i_samples, 'R', scale, coeff))).tolist() 
             nb_row = 3
     
     scale_title = 'tag/nt'
@@ -543,6 +545,7 @@ if visu == 'heatmap':
 if visu == 'fill':    
     data = ['']
     for i in range(0,len(samples)):
+        i_files = description_data[which_samples[i],0]
         i_samples = description_data[which_samples[i],1]
         if np.shape(i_samples) == ():         
             i_samples = [i_samples]
@@ -551,7 +554,7 @@ if visu == 'fill':
         else:
             coeff = ['1']*len(i_samples)
         if libType == 'unstranded':                
-            signal = get_signal(chr, start, stop, i_samples, 'both', scale, coeff)    
+            signal = get_signal(chr, start, stop, i_files, i_samples, 'both', scale, coeff)    
             col = description_data[which_samples[i],4]
             lty = description_data[which_samples[i],5]
             if i==0:
@@ -577,7 +580,7 @@ if visu == 'fill':
                     str_ = 'R'
                 if libType == 'inverse' and str == 'R':
                     str_ = 'F'
-                signal = get_signal(chr, start, stop, i_samples, str_, scale, coeff)
+                signal = get_signal(chr, start, stop, i_files, i_samples, str_, scale, coeff)
                 lty = description_data[which_samples[i],5]   
                 if str_ == 'R':
                     col = 'CornflowerBlue'
