@@ -18,6 +18,8 @@
 		<div class = "contenu" style="min-height:800px">
 			<?php
 			
+			include 'functions.php';
+			
 			# initialize variables
 			$gene = "";
 			$chr = "";
@@ -219,42 +221,16 @@
 
 			# navigate
 			# back
-                                if($start > 1){				
-					echo "<div class = \"navigateur\" style=\"float:left;width:25%\">\n";
-					echo "<form method=\"post\" action=\"coverage.php\">\n";
-					# chr
-					echo "<input type=\"hidden\" name=\"chromosome\" value=\"$chr\">\n";
-					# new coord (start or stop - ((stop+start)/2))
-					$span=(int)(($stop-$start)/2);
-					$start_before=(int)$start-$span;
-					$stop_before=(int)$stop-$span;
-					if($start_before < 1){
-						$start_before = 1;
-						$stop_before = $span*2+1;
-					}
-					$coord_before=$start_before."-".$stop_before;
-					echo "<input type=\"hidden\" name=\"coord\" value=\"$coord_before\">\n";
-					# samples
-					echo "<input type=\"hidden\" name=\"samples[]\" value=\"$samples\">\n";
-					# visu
-					echo "<input type=\"hidden\" name=\"visu\" value=\"$visu\">\n";		
-					# scale
-					echo "<input type=\"hidden\" name=\"scale\" value=\"$scale\">\n";
-					# library type
-					echo "<input type=\"hidden\" name=\"library\" value=\"$libType\">\n";
-					# normalized or raw data
-					echo "<input type=\"hidden\" name=\"norm\" value=\"$norm\">\n";
-					# submit
-					echo "<button class=\"button_nav\" type=\"submit\">\n";
-					echo "<img src=\"images/fleche_gauche_1.png\" alt=\"Before\" height=\"80\" width=\"140\"/>\n";
-					echo "</button>\n";
-					echo "</form>\n";
-					echo "</div>\n";
-                                } else {
-					echo "<div class = \"navigateur\" style=\"float:left;width:25%\">\n";
-					echo "</div>\n";
+				echo "<div class = \"navigateur\" style=\"float:left;width:25%\">\n";
+				
+				if($start > 1){
+				
+					printBrowserArrow($chr_=$chr, $start_=$start, $stop_=$stop, $samples_=$samples, $visu_=$visu, $scale_=$scale, $libType_=$libType, $norm_=$norm, $which="left")
+				
 				}
-
+				
+				echo "</div>\n";
+			
 			# enter new coord
 				echo "<div class = \"navigateur_coord\" style=\"float:left;width:50%\">\n";
 				echo "<form method=\"post\" action=\"coverage.php\">\n";
@@ -290,41 +266,15 @@
 				echo "</div>\n";
 
 			# forward
+				echo "<div class = \"navigateur\" style=\"float:left;width:25%\">\n";
+				
 				if($start < $chr_size && $stop < $chr_size){
-					echo "<div class = \"navigateur\" style=\"float:left;width:25%\">\n";
-					echo "<form method=\"post\" action=\"coverage.php\">\n";
-					# chr
-					echo "<input type=\"hidden\" name=\"chromosome\" value=\"$chr\">\n";
-					# new coord (start or stop + ((stop+start)/2))
-					$span=(int)(($stop-$start)/2);
-					$start_after=(int)$start+$span;
-					$stop_after=(int)$stop+$span;
-					if($stop_after > $chr_size){
-						$start_after = $chr_size - $span*2;
-						$stop_after = $chr_size;
-					}
-					$coord_after=$start_after."-".$stop_after;
-					echo "<input type=\"hidden\" name=\"coord\" value=\"$coord_after\">\n";
-					# samples
-					echo "<input type=\"hidden\" name=\"samples[]\" value=\"$samples\">\n";
-					# visu
-					echo "<input type=\"hidden\" name=\"visu\" value=\"$visu\">\n";		
-					# scale
-					echo "<input type=\"hidden\" name=\"scale\" value=\"$scale\">\n";
-					# library type
-					echo "<input type=\"hidden\" name=\"library\" value=\"$libType\">\n";
-					# normalized or raw data
-					echo "<input type=\"hidden\" name=\"norm\" value=\"$norm\">\n";
-					# submit
-					echo "<button class=\"button_nav\" type=\"submit\">\n";
-					echo "<img src=\"images/fleche_droite_1.png\" alt=\"After\" height=\"80\" width=\"140\"/>\n";
-					echo "</button>\n";
-					echo "</form>\n";
-					echo "</div>\n";
-				} else {
-					echo "<div class = \"navigateur\" style=\"float:left;width:25%\">\n";
-					echo "</div>\n";
-				}
+				
+					printBrowserArrow($chr_=$chr, $start_=$start, $stop_=$stop, $samples_=$samples, $visu_=$visu, $scale_=$scale, $libType_=$libType, $norm_=$norm, $which="right")
+					
+				}				
+		
+				echo "</div>\n";
 
 			# show coverage and annot
 				$res=exec("/home/ugo/TOOLS/miniconda2/bin/python2.7 coverage.py $chr $start $stop $samples $visu $scale $libType $norm $maxSignal");
@@ -379,116 +329,12 @@
 
 			# show count table
 				echo "<div class = \"count_table\" style=\"float:left;height:600px;margin-left:140px;margin-right:100px;width:calc(100% - 240px)\">\n";
-				echo "<table>\n";
-
-			# get description data
-				$description_file=file("data/description_data.tab");
-				$all_groups = array();
-				$all_samples = array();
-				$all_coeff = array();
-				$i=0;
-			# /!\ 1st line of description data file not red
-				foreach($description_file as $line){
-					if($i!=0){
-						$line=explode("\t", $line);
-						$all_groups[] = $line[6];
-						$all_samples[] = $line[1];
-						$all_coeff[] = $line[2];
-					}
-					$i=$i+1;
-				}
-
-			# get count table file
-				$count_file=file("data/counts_raw.tab");
-				$i=0;
-				$samples= explode(",",$samples);
-				foreach($count_file as $line){
-			# /!\ 1st line of count file should be header
-					if($i==0){
-						echo "<tr>\n";
-			# print table 1st line
-						echo "<th>Chr</th><th>Type</th><th>Start</th><th>Stop</th><th>Strand</th><th>ID</th><th>Name</th><th>Parent</th><th>gene</th>";
-						foreach($samples as $s){
-							echo "<th>";
-							echo $s . " densities";
-							echo "</th>";		
-						}
-						echo "\n";
-
-			# get count table header
-						$table_header=explode("\t", $line);
-						echo "</tr>\n";
-
-					} else {
-
-						$line=explode("\t", $line);
-
-						if($line[0] == $chr and $start < $line[3] and $stop > $line[2]){
-							echo "<tr>\n";
-							# annot
-							echo "<td>";
-							echo implode("</td><td>",array_slice($line,0,9));
-							echo "</td>";
-							foreach($samples as $s){
-								echo "<td>";
-								if(array_search($s, $all_samples) !== FALSE){	
-									$i_sample=$s." readcount";
-									$sample_index=array_search($i_sample, $table_header);
-									$val=$line[$sample_index];
-
-									#normalize data
-									if($norm == "True"){
-										$val=$val*$all_coeff[array_search($s, $all_samples)];
-									}
-
-									# get densities (read/nt)
-									$l=$line[3]-$line[2]+1;
-									$val=$val/$l;	
-								} else {
-									$val=0;
-									# get samples associated to group
-									$which_samples=array_keys($all_groups, $s);
-									$nb_samples=0;
-	
-									foreach($which_samples as $which_sample){
-										$i_sample=$all_samples[$which_sample]. " readcount";
-										$sample_index=array_search($i_sample, $table_header);
-										$i_val=$line[$sample_index];
-
-										# normalize data
-										if($norm=="True"){
-											$i_val=$i_val*$all_coeff[$which_sample];
-										}
-										$val=$val+$i_val;
-										$nb_samples=$nb_samples+1;
-									}
-
-									# get samples mean
-									$val=$val/$nb_samples;
-
-									# get densities (read/nt)
-									$l=$line[3]-$line[2]+1;
-									$val=$val/$l;
-								}
-								# get scientific notation
-								$power = ($val % 10) - 1;
-								if($power < -2 or $power > 2){
-        								$val=round(($val / pow(10, $power)), 3) . "e" . $power;
-								} else {
-									$val=round($val, 3);
-								}
-								echo $val;
-								echo "</td>";
-							}				
-							echo "</tr>\n";
-						}
-
-					}	
-					$i=$i+1;
-				}	
-				echo "</table>\n"; # close table
+				
+				getCountTable($countTableFile='./data/counts_raw.tab', $chr=$chr, $start=$start, $stop=$stop, $descriptionDataFile='./data/description_data.tab', $samples=explode(",", $samples), $countType="densities", $norm=True, $log=False, $printAnnot="True", $sortBy="Start", $sortOrder="asc", $printHTMLTable=True, $returnTable=False);
+			
 				echo "</div>\n"; # close count_table div
 				echo "<div style=\"clear:both;height:20px\"></div>";	
+				
 			} else {
 			# set parameters and coord
 				echo "<form method=\"post\" action=\"coverage.php\">\n";
