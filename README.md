@@ -1,2 +1,3 @@
-# seqBrowser
-browser for NGS data exploration
+# SensR
+
+Web browser for NGS data exploration
