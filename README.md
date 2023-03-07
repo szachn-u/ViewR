@@ -1,3 +1,5 @@
 # ViewR
 
-Web browser for NGS data exploration
+ViewR is a Web browser for NGS data exploration
+
+# 
