@@ -16,12 +16,11 @@ A php script produce the interface, a python script extract coverage values and 
 
 ## Install
 
-This is the file structure of the program:
+This is the file structure of the program, that should located in /var/www/html/viewR/:
 
-/var/www/html/viewR/
 <ul>
     <li>index.html (for redirection)</li>
-    <li>scripts/ (for redirection)
+    <li>scripts/
         <ul><li>description.tsv (to edit)</li>
             <li>config.txt (to edit)</li>
             <li>php, python, css and js scripts (do not change)</li>
