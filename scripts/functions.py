@@ -1884,7 +1884,7 @@ def parseArgs():
                 
                 argVal = True
                 
-            dictArgs[nameArg] = argVal
+            dictArgs[nameArg] = argVal.strip("\'")
     
     return(dictArgs)
     
