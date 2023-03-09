@@ -1,3 +1,1 @@
 file_F	file_R	replicate_name	cond_name	norm_coeff
-../bw/sample1.str1.bw	../bw/sample1.str2.bw	sample1	condition1	1
-../bw/sample2.str1.bw	../bw/sample2.str1.bw	sample2	condition2	1
