@@ -21,7 +21,7 @@ A php script produce the interface, a python script extract coverage values and 
 git clone https://github.com/szachn-u/ViewR.git
 ```
 #### 2. Edit description file
-Edit **description.tsv** in the viewR/script/ directory, a tab separated file with one sample per line:  
+Edit **description.tsv** in the ViewR/script/ directory, a tab separated file with one sample per line:  
  - file_f : path to the bigWig file for the reads from the forward strand (or all reads, if the library is unstranded, e.g. like ChIP-seq).  
  - file_r : path to the bigWig file for the reads from the reverse strand (for strand-specific libraries only).  
  - replicate_name : short name for the sample.  
@@ -39,8 +39,8 @@ cd ViewR/scripts
 #### 4. Copy the viewR directory on the server
 ```
 cd ../../
-sudo cp -r viewR/ /var/www/html/
-sudo chmod -R +x /var/www/html/viewR   # to allow execution of the scripts
+sudo cp -r ViewR/ /var/www/html/
+sudo chmod -R +x /var/www/html/ViewR   # to allow execution of the scripts
 ```
 
 ## Licence
