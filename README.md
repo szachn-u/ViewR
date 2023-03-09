@@ -36,10 +36,15 @@ cd ViewR/scripts
 - my_annot.gtf should be in gtf format, with gene_id, gene_type and gene_name in the attribute column (9th)
 - genome_info.tsv is a tab separated file, without header, with chromosome names (as in bigWig files) and chromosome sizes
 
-### 4. Copy the viewR directory in /var/www/html
+### 4. Copy the viewR directory on the server
 ```
 cd ../../
 sudo cp -r viewR/ /var/www/html/
 sudo chmod -R +x /var/www/html/viewR   # to allow execution of the scripts
 ```
 
+## Licence
+
+## Authors
+
+## Citation
