@@ -31,12 +31,13 @@ Edit **description.tsv**, a tab separated file, with header, one sample per line
 #### 3. Run config.sh script
 ```
 cd ViewR
-./conf.sh --description /path/to/description.tsv --annot my_annot.gtf --genome_info genome_info.tsv --out_dir /path/to/myViewR --python_path /path/to/python # requires bedtools and htslib to be installed
+# requires bedtools and htslib to be installed
+./conf.sh --description /path/to/description.tsv --annot my_annot.gtf --genome_info genome_info.tsv --out_dir /path/to/myViewR --python_path /path/to/python
 ```
 - description.tsv, the file edited previously
 - **my_annot.gtf** should be in gtf format, with gene_id, gene_type and gene_name in the attribute column (9th)
 - **genome_info.tsv** is a tab separated file, without header, with chromosome names (as in bigWig files) and chromosome sizes
-- /path/to/python refers to your python, with pybigWig and pytabix installed
+- **/path/to/python** refers to your python, with pybigWig and pytabix installed
 
 #### 4. Copy the output of ./conf.sh on the server
 ```
