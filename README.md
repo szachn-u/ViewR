@@ -27,7 +27,7 @@ Edit **description.tsv**, a tab separated file, with header, one sample per line
  - replicate_name : short name for the sample.  
  - cond_name : condition of the sample.  
  - norm_coeff : normalisation factor. The coverage will be **multiplied** by this value if normalized data are asked.  
-
+  
 #### 3. Run config.sh script
 ```
 cd ViewR
@@ -37,17 +37,14 @@ cd ViewR
 - **description.tsv**, the file edited previously
 - **my_annot.gtf** should be in gtf format, with gene_id, gene_type and gene_name in the attribute column (9th)
 - **genome_info.tsv** is a tab separated file, without header, with chromosome names (as in bigWig files) and chromosome sizes
-- **/path/to/myViewR**, the directory to store your ViewR files 
+- **/path/to/myViewR**, the directory to store your ViewR files
 - **/path/to/python** refers to your python, with pybigWig and pytabix installed
-
+  
 #### 4. Copy the output of ./conf.sh on the server
 ```
 sudo cp -r /path/to/myViewR/ /var/www/html/
 sudo chmod -R +x /var/www/html/myViewR   # to allow execution of the scripts
 ```
-
-## Licence
-
+  
 ## Authors
-
-## Citation
+Ugo Szachnowski <ugo.szachnowski@hotmail.fr>
