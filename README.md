@@ -44,7 +44,8 @@ cd ViewR
 sudo cp -r /path/to/myViewR/ /var/www/html/
 sudo chmod -R +x /var/www/html/myViewR   # to allow execution of the scripts
 ```
-#### 5. Launch it by typing localhost/myViewR 
+#### 5. Launch it
+You can access your ViewR by typing **localhost/myViewR** in the adress bar of your web browser
   
 ## Authors
 Ugo Szachnowski <ugo.szachnowski@hotmail.fr>
