@@ -7,8 +7,7 @@ It can display images of read coverage across the genome from any "omic" data (R
 
 ViewR is web-based and all the data are on the server side.  
 It is designed to take coverage data as [bigWig](https://genome.ucsc.edu/goldenPath/help/bigWig.html) files and annotation as [gtf](https://www.ensembl.org/info/website/upload/gff.html) file.  
-It runs with [Apache](https://httpd.apache.org/) on Ubuntu, and requires [php](https://www.php.net/) and [python3](https://www.python.org/), with [pyBigWig](https://github.com/deeptools/pyBigWig) and [pytabix](https://github.com/slowkow/pytabix) libraries.  
-A php script produce the interface, a python script extract coverage values and genes coordinates requested, and the [Plotly](https://plotly.com/javascript/) graphical library generate the graphs.  
+It runs with [Apache](https://httpd.apache.org/) on Ubuntu, and requires [php](https://www.php.net/) and [python3](https://www.python.org/), with [pyBigWig](https://github.com/deeptools/pyBigWig) and [pytabix](https://github.com/slowkow/pytabix) libraries. It makes also use of the the [Plotly](https://plotly.com/javascript/) graphical library.
 
 ## Browser Compatibilities
 
