@@ -281,7 +281,7 @@
         
         <div style="width:90%;height:5%;margin:0 5% 0 5%;text-align:right">
             
-            <p>Visualization by viewR v1.0</p>
+            <p>Visualization by <a href="https://github.com/szachn-u/ViewR">ViewR</a></p>
         
         </div>
         

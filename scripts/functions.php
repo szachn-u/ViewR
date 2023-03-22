@@ -1068,7 +1068,7 @@ function printCoverageMenuPage(){
 			}
             
             echo "<div style=\"width:100%;position:relative;float:left\">\n";
-            echo "<div style=\"position:relative;width:50%;text-align:right;float:left\">collapse isofoms</div>\n";
+            echo "<div style=\"position:relative;width:50%;text-align:right;float:left\">collapse isoforms</div>\n";
             if($collapse=="yes"){
 				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"yes\" checked>yes</div>\n";
 				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"no\">no</div>\n";
