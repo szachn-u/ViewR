@@ -68,10 +68,15 @@ if [[ "$annot_in" == "" ]]; then echo "  conf.sh"; echo "    missing annot file"
 if [[ "$genome_info" == "" ]]; then echo "  conf.sh"; echo "    missing genome_info file"; print_usage; exit; fi 
 
 ### make dirs
+echo " ** create viewR **"
+echo "   make dirs"
+
 mkdir "$out_dir"
 mkdir "$out_dir/scripts" "$out_dir/annot" "$out_dir/images" "$out_dir/bw"
 
 ### prepare annotation files
+echo "   prepare annotation files"
+
 annot_out="$out_dir/annot/annot.gtf.gz"
 gene_names="$out_dir/annot/gene_names.tsv.gz"
 gene_types="$out_dir/annot/gene_types.txt"
@@ -91,12 +96,19 @@ zcat "$annot_out" | grep -P "\tgene\t" | awk -F"\t" 'OFS="\t"{
 	tmp=""
 	gene_id=""
 	gene_type=""
+	gene_biotype=""
 	gene_name=""
 	for(i = 1; i <= n; i++){
 		if(a[i] ~ /gene_id/){tmp = a[i]; gsub("gene_id", "", tmp); gsub("\"", "", tmp); gsub(" ", "", tmp); gene_id = tmp}
 		if(a[i] ~ /gene_type/){tmp = a[i]; gsub("gene_type", "", tmp); gsub("\"", "", tmp); gsub(" ", "", tmp); gene_type = tmp}
+		if(a[i] ~ /gene_biotype/){tmp = a[i]; gsub("gene_biotype", "", tmp); gsub("\"", "", tmp); gsub(" ", "", tmp); gene_biotype = tmp}
 		if(a[i] ~ /gene_name/){tmp = a[i]; gsub("gene_name", "", tmp); gsub("\"", "", tmp); gsub(" ", "", tmp); gene_name = tmp}
 		tmp=""
+	}
+	if(gene_type == ""){
+		if(gene_biotype != ""){
+			gene_type = gene_biotype
+		}
 	}
 	print gene_id, $2, gene_type, $4, $5, $6, $7, $8, $1, gene_id, gene_name
 }' | gzip > "$gene_names"
@@ -105,6 +117,8 @@ zcat "$annot_out" | grep -P "\tgene\t" | awk -F"\t" 'OFS="\t"{
 zcat "$gene_names" | cut -f3 | sort | uniq > "$gene_types"
 
 ### copy genome info 
+echo "   copy bw files"
+
 cp "$genome_info" "$out_dir/annot/chr_size.tab"
 
 ### copy bw files in ../bw directory
@@ -146,20 +160,31 @@ do
 done
 
 ### set config.txt file
-if (( $(grep -c "PYTHON_PATH=python3" scripts/config.txt) != 1 ));
+echo "   set config.txt"
+
+viewrDir=$(dirname $0)
+
+if (( $(grep -c "PYTHON_PATH=python3" "$viewrDir/scripts/config.txt") != 1 ));
 then
-	cat "scripts/config.txt" | awk -v p=$python_path '{if($1 ~ /PYTHON_PATH/){print "PYTHON_PATH="p}else{print $0}}' > "$out_dir/scripts/config.txt"
+	cat "$viewrDir/scripts/config.txt" | awk -v p=$python_path '{if($1 ~ /PYTHON_PATH/){print "PYTHON_PATH="p}else{print $0}}' > "$out_dir/scripts/config.txt"
 fi
 
 ### copy scripts
-cp "scripts/index.html" "$out_dir/"
-cp "scripts/coverage.php" "$out_dir/scripts/"
-cp "scripts/coverage.py" "$out_dir/scripts/"
-cp "scripts/functions.php" "$out_dir/scripts/"
-cp "scripts/functions.py" "$out_dir/scripts/"
-cp "scripts/functions.js" "$out_dir/scripts/"
-cp "scripts/design.css" "$out_dir/scripts/"
-cp "scripts/index.php" "$out_dir/scripts/"
+echo "   copy scripts"
+
+cp "$viewrDir/scripts/index.html" "$out_dir/"
+cp "$viewrDir/scripts/coverage.php" "$out_dir/scripts/"
+cp "$viewrDir/scripts/coverage.py" "$out_dir/scripts/"
+cp "$viewrDir/scripts/functions.php" "$out_dir/scripts/"
+cp "$viewrDir/scripts/functions.py" "$out_dir/scripts/"
+cp "$viewrDir/scripts/functions.js" "$out_dir/scripts/"
+cp "$viewrDir/scripts/design.css" "$out_dir/scripts/"
+cp "$viewrDir/scripts/index.php" "$out_dir/scripts/"
 
 ### copy images
-cp "images/*" "$out_dir/images/"
+echo "   copy images"
+
+cp "$viewrDir/images/*" "$out_dir/images/"
+
+# end
+echo "  ** viewR created **"
