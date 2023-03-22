@@ -1,3 +1,5 @@
+![ViewR-logo](images/header.png)
+
 # ViewR
 
 ViewR is a browser-based tool for NGS data exploration.  
