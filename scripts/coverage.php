@@ -102,6 +102,16 @@
 				unset($_SESSION["TYPES_TO_SHOW"]);
 				
 			}
+			
+			if(isset($_POST["collapse_transcripts"])){
+				if($_POST["collapse_transcripts"] == "yes"){
+					$_SESSION["SHOW_TRANSCRIPT_NAME"] = "no";
+					$_SESSION["COLLAPSE_TRANSCRIPTS"] = "yes";
+				} else {
+					$_SESSION["SHOW_TRANSCRIPT_NAME"] = "yes";
+					$_SESSION["COLLAPSE_TRANSCRIPTS"] = "no";
+				}
+			}
             
             #if(isset($_POST["menuTypeSetInput"])){
 			#	var_dump($_POST["menuTypeSetInput"]);

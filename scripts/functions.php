@@ -142,34 +142,44 @@ function setConfig($file="config.txt"){
                         
                         if(sizeof($splitLine) == 1){
                             
-                            if(!array_key_exists("noClass", $types_in_annot)){
+                            $t = str_replace(array("\r", "\n", ), '', $line_);
+                            
+                            if(!array_key_exists("noClass", $types_in_annot) && ( $t != "")){
                                 
                                 $types_in_annot["noClass"] = array();
                                 
                             }
                             
-                            array_push($types_in_annot["noClass"], str_replace(array("\r", "\n"), '', $line_)); 
+                            if($t != ""){
+								array_push($types_in_annot["noClass"], $t); 
+                            }
                             
                         } else if (sizeof($splitLine) == 2){
                             
-                            if(!array_key_exists($splitLine[0], $types_in_annot)){
-                                
-                                $types_in_annot[$splitLine[0]] = array();
-                                
+                            $class = $splitLine[0];
+                            $t = str_replace(array("\r", "\n"), '', $splitLine[1]);
+                            
+                            if(( $t != "" ) or ( $class != "" )){
+								if(!array_key_exists($splitLine[0], $types_in_annot)){
+									
+									$types_in_annot[$splitLine[0]] = array();
+									
+								}
+								
+								array_push($types_in_annot[$splitLine[0]], $t);
                             }
-                            
-                            array_push($types_in_annot[$splitLine[0]], str_replace(array("\r", "\n"), '', $splitLine[1]));
-                            
                         }
                         
                     }
-                    $_SESSION["ANNOT_GENE_TYPES_LIST"] = $types_in_annot;
-                    if(array_key_exists("noClass", $types_in_annot)){
-                        $tmp = $types_in_annot["noClass"];
-                        sort($tmp);
-                        $_SESSION["ANNOT_GENE_TYPES_LIST"]["noClass"] = $tmp;
-                    }
                     
+                    if (sizeof($types_in_annot) != 0){
+						$_SESSION["ANNOT_GENE_TYPES_LIST"] = $types_in_annot;
+						if(array_key_exists("noClass", $types_in_annot)){
+							$tmp = $types_in_annot["noClass"];
+							sort($tmp);
+							$_SESSION["ANNOT_GENE_TYPES_LIST"]["noClass"] = $tmp;
+						}
+                    }
                 }
                 
                 break;
@@ -1047,6 +1057,28 @@ function printCoverageMenuPage(){
             
             printAnnotFeatureSelection($value, $is_open);
             
+            echo "<div style=\"clear:both;width:100%\"></div>\n";
+            
+            $collapse="yes";
+            
+            if(isset($_SESSION["COLLAPSE_TRANSCRIPTS"])){
+				if($_SESSION["COLLAPSE_TRANSCRIPTS"] == "no"){
+					$collapse = "no";
+				}
+			}
+            
+            echo "<div style=\"width:100%;position:relative;float:left\">\n";
+            echo "<div style=\"position:relative;width:50%;text-align:right;float:left\">collapse isofoms</div>\n";
+            if($collapse=="yes"){
+				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"yes\" checked>yes</div>\n";
+				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"no\">no</div>\n";
+			} else {
+				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"yes\">yes</div>\n";
+				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"no\" checked>no</div>\n";
+			}
+            echo "</div>\n";
+            
+            echo "<div style=\"clear:both;width:100%\"></div>\n";
         }
         
         #echo "<div style=\"clear:both;width:100%\"></div>\n";
@@ -1374,9 +1406,18 @@ function printCoverage($chr, $start, $stop){
     
     $types_to_show = isset($_SESSION['TYPES_TO_SHOW']) ? implode(",", $_SESSION['TYPES_TO_SHOW']) : "";
     
-    $show_transcript_name = isset($_SESSION["SHOW_TRANSCRIPT_NAME"]) ? $_SESSION["SHOW_TRANSCRIPT_NAME"] : "no";
-    
-    $collapse_transcripts =  isset($_SESSION["COLLAPSE_TRANSCRIPTS"]) ? $_SESSION["COLLAPSE_TRANSCRIPTS"] : "yes";
+    $show_transcript_name = "no";
+	$collapse_transcripts = "yes";
+	
+    if(isset($_SESSION["COLLAPSE_TRANSCRIPTS"])){
+		
+		$show_transcript_name = $_SESSION["SHOW_TRANSCRIPT_NAME"];
+		$collapse_transcripts = $_SESSION["COLLAPSE_TRANSCRIPTS"];
+		
+	} 
+	
+	#$show_transcript_name = isset($_SESSION["SHOW_TRANSCRIPT_NAME"]) ? $_SESSION["SHOW_TRANSCRIPT_NAME"] : "no";
+    #$collapse_transcripts =  isset($_SESSION["COLLAPSE_TRANSCRIPTS"]) ? $_SESSION["COLLAPSE_TRANSCRIPTS"] : "yes";
     
     # protect variables
     $chr = escapeshellarg($chr);

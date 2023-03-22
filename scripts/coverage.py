@@ -21,8 +21,6 @@ import functions as func
 
 args = func.parseArgs()
 
-print(args)
-
 # chromosome
 CHROM = args['chr'] if 'chr' in args else None
 
@@ -173,7 +171,7 @@ for visu in visus_order:
             
             coverageData.getLineTraces(sampleNames = sampleNames_visu, scale = scale_visu_, libraryTypes = lib_type_visu, normalized = normalized_visu, description_data = description_data, blockLayout = iBlockLayout, color = colorLine, lineType = lineType)
             
-            windowLayout.setLineLayout(blockLayout = iBlockLayout, isLog = scale_visu_ == 'log2')
+            windowLayout.setLineLayout(blockLayout = iBlockLayout, isLog = (scale_visu_ == 'log2'))
             
             samples_left = ['' if i in index_samples else samples_left[i] for i in range(0,len(samples_left))]
             

@@ -35,7 +35,7 @@ class Annotation:
         self.parking = [np.array([0] * self.spanWindow)]
         
         self.annot = {}
-        self.attributes = ["gene_id","gene_name","gene_type","transcript_id","transcript_name","transcript_type"]
+        self.attributes = ["gene_id","gene_name","gene_type","gene_biotype", "transcript_id","transcript_name","transcript_type", "transcript_biotype"]
         self.types_allowed = set(types_allowed)
         self.isAnnotToPlot = False
         self.show_transcript_name = show_transcript_name
@@ -87,7 +87,19 @@ class Annotation:
         start = int(start)
         end = int(end)
         
-        gene_id, gene_name, gene_type, transcript_id, transcript_name, transcript_type = self.__readGtfAttributes(attr_line)
+        gene_id, gene_name, gene_type, gene_biotype, transcript_id, transcript_name, transcript_type, transcript_biotype = self.__readGtfAttributes(attr_line)
+        
+        if gene_type == "":
+            if gene_biotype == "":
+                gene_type = "NA"
+            else:
+                gene_type = gene_biotype
+        
+        if transcript_type == "":
+            if transcript_biotype == "":
+                transcript_type = "NA"
+            else:
+                transcript_type = transcript_biotype
         
         if type == "gene" and gene_type in self.types_allowed:
             if not gene_id in self.annot:
@@ -507,7 +519,7 @@ class Annotation:
                         self.__addDataGene(startGene = start_, stopGene = end_, yPos = yPosGene, geneID = '', geneType = gene_type, strand = strand, shape = "Box", size = "big")
             else:
                 
-                for transcript in self.annot[gene_id]["transcripts"]:
+                for transcript_id in self.annot[gene_id]["transcripts"]:
                     
                     start = self.annot[gene_id]["transcripts"][transcript_id]["start"]
                     end = self.annot[gene_id]["transcripts"][transcript_id]["end"]
@@ -734,7 +746,8 @@ class coverageData:
             
             if strand == 'R':
                 
-                signal = -signal
+                if np.mean(signal) > 0:
+                    signal = -signal
         
         signal = signal.tolist()
         
