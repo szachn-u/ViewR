@@ -705,8 +705,11 @@ class coverageData:
                         bw = pyBigWig.open(file)
                         
                         try:
+                            
                             signal = signal + np.absolute(np.nan_to_num(np.array(bw.values(self.chrWindow, self.startWindow, self.stopWindow))))*coeff
+                        
                         except:
+                            
                             pass
                         
                         bw.close()
@@ -730,8 +733,11 @@ class coverageData:
                     bw = pyBigWig.open(file)
                     
                     try:
+                        
                         signal = signal + np.absolute(np.nan_to_num(np.array(bw.values(self.chrWindow, self.startWindow, self.stopWindow))))*coeff
+                    
                     except:
+                        
                         pass
                     
                     bw.close()
@@ -741,6 +747,10 @@ class coverageData:
         if scale == 'log2':
             
             signal = np.log2(signal+1)
+        
+        if strand == "R":
+            
+            signal = -signal
         
         signal = signal.tolist()
         
