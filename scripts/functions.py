@@ -672,7 +672,7 @@ class coverageData:
         return(res)
     
     
-    def __getSignalFromBigWig(self, sampleName, strand, scale, normalized, description_data, reverseNegative = True, getMax = False):
+    def __getSignalFromBigWig(self, sampleName, strand, scale, normalized, description_data, getMax = False):
         
         repNames = description_data.getSampleInfo(sampleName = sampleName, info = 'replicate_name')
         
@@ -705,7 +705,7 @@ class coverageData:
                         bw = pyBigWig.open(file)
                         
                         try:
-                            signal = signal + np.nan_to_num(np.array(bw.values(self.chrWindow, self.startWindow, self.stopWindow)))*coeff
+                            signal = signal + np.absolute(np.nan_to_num(np.array(bw.values(self.chrWindow, self.startWindow, self.stopWindow))))*coeff
                         except:
                             pass
                         
@@ -730,7 +730,7 @@ class coverageData:
                     bw = pyBigWig.open(file)
                     
                     try:
-                        signal = signal + np.nan_to_num(np.array(bw.values(self.chrWindow, self.startWindow, self.stopWindow)))*coeff
+                        signal = signal + np.absolute(np.nan_to_num(np.array(bw.values(self.chrWindow, self.startWindow, self.stopWindow))))*coeff
                     except:
                         pass
                     
@@ -741,13 +741,6 @@ class coverageData:
         if scale == 'log2':
             
             signal = np.log2(signal+1)
-        
-        if reverseNegative:    
-            
-            if strand == 'R':
-                
-                if np.mean(signal) > 0:
-                    signal = -signal
         
         signal = signal.tolist()
         
