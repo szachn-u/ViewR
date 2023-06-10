@@ -214,9 +214,9 @@ for visu in visus_order:
                 
                 if scale_visu[i] == 'log2':
                     
-                    text = text + ', log2 tag/nt'
+                    text = text + ', log2 read/nt'
                 else:
-                    text = text + ', tag/nt'
+                    text = text + ', read/nt'
                 
                 if not normalized_visu[i]:
                     text = text + ' (raw)' 
