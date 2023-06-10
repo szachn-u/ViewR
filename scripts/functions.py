@@ -193,8 +193,12 @@ class Annotation:
                 if (record[0] == self.chrWindow) and (int(record[3]) < self.stopWindow) and (int(record[4]) > self.startWindow) and (int(record[3]) < int(record[4])):
                     
                     self.__setAnnotLine(record)
+                    i = i + 1
+                
+                if i > self.maxGenesToShow:
+                    break
         
-        if len(self.annot) > 0 and len(self.annot) <= self.maxGenesToShow:
+        if len(self.annot) > 0 and i <= self.maxGenesToShow:
             self.isAnnotToPlot = True
     
     ### set trace and shapes : add data to trace and shapes
