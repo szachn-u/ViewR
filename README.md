@@ -2,7 +2,7 @@
 
 # ViewR
 
-ViewR is a browser-based tool for NGS data exploration.  
+ViewR is a web browser based tool for NGS data exploration.  
 It displays images of read coverage across the genome from any "omic" data (RNA-seq, ChIP-seq, etc), along with the corresponding gene annotation.
 
 #### How It Works
