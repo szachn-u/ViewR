@@ -25,6 +25,7 @@ class Annotation:
     def __init__(self, annotFile, chrWindow, startWindow, stopWindow, types_allowed, show_transcript_name):
         
         self.maxGenesToShow = 500
+        self.maxGenesExpanded = 50
         
         self.annotFile = annotFile
         self.indexed = annotFile.endswith(".gz")
@@ -499,6 +500,9 @@ class Annotation:
     def setTraceAndShapes(self, blockLayout, collapse_transcripts):
         
         self.__setBlockLayout(blockLayout)
+        
+        if len(self.annot) > self.maxGenesExpanded:
+            collapse_transcripts = False
         
         for gene_id in self.annot.keys():
             
