@@ -24,6 +24,8 @@ class Annotation:
     
     def __init__(self, annotFile, chrWindow, startWindow, stopWindow, types_allowed, show_transcript_name):
         
+        self.maxGenesToShow = 500
+        
         self.annotFile = annotFile
         self.indexed = annotFile.endswith(".gz")
         
@@ -192,7 +194,7 @@ class Annotation:
                     
                     self.__setAnnotLine(record)
         
-        if len(self.annot) > 0:
+        if len(self.annot) > 0 and len(self.annot) <= self.maxGenesToShow:
             self.isAnnotToPlot = True
     
     ### set trace and shapes : add data to trace and shapes
