@@ -957,7 +957,7 @@ class coverageData:
             
             mat[i] = self.__getSignalFromBigWig(sampleName = sampleNames[i_], strand = strand, scale = scale, normalized = normalized[i_], description_data = description_data, reverseNegative = False, getMax = True)
         
-        scale_title = 'tag/nt'
+        scale_title = 'read/nt'
         
         if scale == 'log2':
             
@@ -1063,7 +1063,7 @@ class windowLayout:
         self.layout['yaxis' + str(blockLayout)] = {
             'domain' : self.setYdomain(blockLayout = blockLayout, blockLayoutHeight = self.line_height),
             'anchor' : 'x' + str(blockLayout),
-            'title' : 'log2 ' * isLog + 'tag/nt',
+            'title' : 'log2 ' * isLog + 'read/nt',
             'fixedrange' : True
             }
     
@@ -1116,7 +1116,7 @@ class windowLayout:
             'anchor' : 'y' + str(blockLayout), 
             'ticks' : "",
             'title' : {
-                'text' : 'log2 ' * (scale == 'log2') + 'tag/nt',
+                'text' : 'log2 ' * (scale == 'log2') + 'read/nt',
                 'standoff' : 0
                 },
             'side' : 'top',
