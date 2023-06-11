@@ -965,7 +965,7 @@ class coverageData:
                 
                 y_lab_[i] = sampleNames[i_] + " (raw)"
             
-            mat[i] = self.__getSignalFromBigWig(sampleName = sampleNames[i_], strand = strand, scale = scale, normalized = normalized[i_], description_data = description_data, reverseNegative = False, getMax = True)
+            mat[i] = self.__getSignalFromBigWig(sampleName = sampleNames[i_], strand = strand, scale = scale, normalized = normalized[i_], description_data = description_data, getMax = True)
         
         scale_title = 'read/nt'
         
