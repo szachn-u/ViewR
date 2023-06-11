@@ -196,7 +196,7 @@ class Annotation:
                     self.__setAnnotLine(record)
                     #i = i + 1
                 
-                if i > self.maxGenesToShow:
+                if len(self.annot) > self.maxGenesToShow:
                     break
         
         if len(self.annot) > 0 and len(self.annot) <= self.maxGenesToShow:
