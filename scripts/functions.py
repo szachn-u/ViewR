@@ -682,7 +682,7 @@ class coverageData:
         return(res)
     
     
-    def __getSignalFromBigWig(self, sampleName, strand, scale, normalized, description_data, getMax = False):
+    def __getSignalFromBigWig(self, sampleName, strand, scale, normalized, description_data, negForReverse = True, getMax = False):
         
         repNames = description_data.getSampleInfo(sampleName = sampleName, info = 'replicate_name')
         
@@ -759,8 +759,8 @@ class coverageData:
             signal = np.log2(signal+1)
         
         if strand == "R":
-            
-            signal = -signal
+            if negForReverse:
+                signal = -signal
         
         signal = signal.tolist()
         
@@ -965,7 +965,7 @@ class coverageData:
                 
                 y_lab_[i] = sampleNames[i_] + " (raw)"
             
-            mat[i] = self.__getSignalFromBigWig(sampleName = sampleNames[i_], strand = strand, scale = scale, normalized = normalized[i_], description_data = description_data, getMax = True)
+            mat[i] = self.__getSignalFromBigWig(sampleName = sampleNames[i_], strand = strand, scale = scale, normalized = normalized[i_], description_data = description_data, negForReverse = False, getMax = True)
         
         scale_title = 'read/nt'
         
