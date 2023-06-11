@@ -173,7 +173,7 @@ class Annotation:
     # readAnnotFile
     def readAnnotFile(self):
         
-        i = 0
+        #i = 0
         
         if os.path.exists(self.annotFile):
             if self.indexed:
@@ -194,12 +194,12 @@ class Annotation:
                 if (record[0] == self.chrWindow) and (int(record[3]) < self.stopWindow) and (int(record[4]) > self.startWindow) and (int(record[3]) < int(record[4])):
                     
                     self.__setAnnotLine(record)
-                    i = i + 1
+                    #i = i + 1
                 
                 if i > self.maxGenesToShow:
                     break
         
-        if len(self.annot) > 0 and i <= self.maxGenesToShow:
+        if len(self.annot) > 0 and len(self.annot) <= self.maxGenesToShow:
             self.isAnnotToPlot = True
     
     ### set trace and shapes : add data to trace and shapes
