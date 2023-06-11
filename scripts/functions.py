@@ -24,8 +24,8 @@ class Annotation:
     
     def __init__(self, annotFile, chrWindow, startWindow, stopWindow, types_allowed, show_transcript_name):
         
-        self.maxGenesToShow = 500
-        self.maxGenesExpanded = 50
+        self.maxGenesToShow = 300
+        self.maxGenesExpanded = 30
         
         self.annotFile = annotFile
         self.indexed = annotFile.endswith(".gz")
