@@ -502,7 +502,7 @@ class Annotation:
         self.__setBlockLayout(blockLayout)
         
         if len(self.annot) > self.maxGenesExpanded:
-            collapse_transcripts = False
+            collapse_transcripts = True
         
         for gene_id in self.annot.keys():
             
