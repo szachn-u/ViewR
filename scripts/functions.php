@@ -404,6 +404,7 @@ function printAllSampleSelectors(){
         
         if($i == 5){
             echo "</div>\n"; # close navbar
+	    echo "<hr style=\"clear:both;visibility:hidden\">\n";
             $i = 0;
         }
         $i = $i + 1;
