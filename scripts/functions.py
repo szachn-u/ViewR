@@ -995,19 +995,19 @@ class coverageData:
     
     def getHeatmapLegend(self, blockLayout):
         
-        if self.maxSignal == 0:
-            
-            z = [[0,0]]
-            
-        else:
-            
-            z = [list(range(0, int(self.maxSignal)))]
+        #if self.maxSignal == 0:    
+        #    z = [[0,0]]
+        #else:
+        #    z = [list(range(0, int(self.maxSignal+1)))]
+        
+        z = [[(round((self.maxSignal+1) / 99,2)) * i for i in range(0,100)]]
         
         self.data.append({
+            'x' : z[0],
             'z' : z,
             'type' : 'heatmap',
             'zmin' : 0,
-            'zmax' : self.maxSignal,
+            'zmax' : self.maxSignal+1,
             'colorscale' : self.colorScale,
             'showscale' : False,
             'hoverinfo' : 'skip',
