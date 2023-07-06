@@ -1,5 +1,19 @@
 <?php
 
+## getRandomString
+# create a random string of length n
+# from https://www.w3docs.com/snippets/php/how-to-generate-a-random-string-with-php.html
+
+function getRandomString($n = 10){
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    for ($i = 0; $i < $n; $i++) {
+        $index = rand(0, strlen($characters) - 1);
+        $randomString .= $characters[$index];
+    }
+    return $randomString;
+}
+
 ## setConfig
 # read config file :
 # contains : PYTHON_PATH, DESCRIPTION_DATA, ANNOT_FILE, ANNOT_IS_INDEXED, ANNOT_TYPE, CHR_SIZE, TYPES_LIST
@@ -7,9 +21,26 @@
 
 function setConfig($file="config.txt"){
     
-    foreach(file($file) as $line){
+    $id = getRandomString();
+    
+    $_SESSION[$id] = array();
+    
+    $t = time();
+    $_SESSION[$id]["time"] = $t;
+    
+    foreach(array_keys($_SESSION) as $k){
+        if(!array_key_exists("time", $_SESSION[$k])){
+            unset($_SESSION[$k]);
+        } else {
+            if(($_SESSION[$k]["time"] - $t) > 1200){
+                unset($_SESSION[$k]);
+            }
+        }
+    }
+    
+    foreach(file($file) as $LINE){
         
-        $line = preg_replace('/\s+/', '', $line);
+        $line = preg_replace('/\s+/', '', $LINE);
         
         if(empty($line)){
             
@@ -27,7 +58,7 @@ function setConfig($file="config.txt"){
             
             case "PYTHON_PATH":
                 
-                $_SESSION["PYTHON_PATH"] = ($value == "") ? "/usr/bin/python3" : $value;
+                $_SESSION[$id]["PYTHON_PATH"] = ($value == "") ? "/usr/bin/python3" : $value;
                                 
                 break;
             
@@ -37,7 +68,7 @@ function setConfig($file="config.txt"){
                 
                 if(file_exists($value)){
                     
-                    $_SESSION["DESCRIPTION_DATA_FILE"] = $value;
+                    $_SESSION[$id]["DESCRIPTION_DATA_FILE"] = $value;
                     
                     $i = 0;
                     
@@ -65,7 +96,7 @@ function setConfig($file="config.txt"){
                         
                     }
                     
-                    $_SESSION["DESCRIPTION_DATA"] = sizeof($description_data) > 0 ? $description_data : null;
+                    $_SESSION[$id]["DESCRIPTION_DATA"] = sizeof($description_data) > 0 ? $description_data : null;
                     
                 } 
                 
@@ -75,7 +106,7 @@ function setConfig($file="config.txt"){
                 
                 if (file_exists($value)){
                     
-                    $_SESSION["SCRIPTS_DIR"] = $value;
+                    $_SESSION[$id]["SCRIPTS_DIR"] = $value;
                     
                 }
                 
@@ -85,7 +116,7 @@ function setConfig($file="config.txt"){
                 
                 if(file_exists($value)){
                     
-                    $_SESSION["ANNOT_FILE"] = $value;
+                    $_SESSION[$id]["ANNOT_FILE"] = $value;
                     
                 }
                 
@@ -93,7 +124,7 @@ function setConfig($file="config.txt"){
             
             case "ANNOT_IS_INDEXED":
                 
-                $_SESSION["ANNOT_IS_INDEXED"] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                $_SESSION[$id]["ANNOT_IS_INDEXED"] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
                 
                 break;
             
@@ -116,7 +147,7 @@ function setConfig($file="config.txt"){
                     
                 } 
                 
-                $_SESSION["CHR_SIZE"] = sizeof($chr_sizes) > 0 ? $chr_sizes : null;
+                $_SESSION[$id]["CHR_SIZE"] = sizeof($chr_sizes) > 0 ? $chr_sizes : null;
                 
                 break;
             
@@ -124,7 +155,7 @@ function setConfig($file="config.txt"){
                 
                 if(file_exists($value)){
                     
-                    $_SESSION["ANNOT_NAME_INDEX"] = $value;
+                    $_SESSION[$id]["ANNOT_NAME_INDEX"] = $value;
                     
                 }
                 
@@ -151,7 +182,7 @@ function setConfig($file="config.txt"){
                             }
                             
                             if($t != ""){
-								array_push($types_in_annot["noClass"], $t); 
+                                array_push($types_in_annot["noClass"], $t); 
                             }
                             
                         } else if (sizeof($splitLine) == 2){
@@ -160,25 +191,25 @@ function setConfig($file="config.txt"){
                             $t = str_replace(array("\r", "\n"), '', $splitLine[1]);
                             
                             if(( $t != "" ) or ( $class != "" )){
-								if(!array_key_exists($splitLine[0], $types_in_annot)){
-									
-									$types_in_annot[$splitLine[0]] = array();
-									
-								}
-								
-								array_push($types_in_annot[$splitLine[0]], $t);
+                                if(!array_key_exists($splitLine[0], $types_in_annot)){
+                                    
+                                    $types_in_annot[$splitLine[0]] = array();
+                                    
+                                }
+                                
+                                array_push($types_in_annot[$splitLine[0]], $t);
                             }
                         }
                         
                     }
                     
                     if (sizeof($types_in_annot) != 0){
-						$_SESSION["ANNOT_GENE_TYPES_LIST"] = $types_in_annot;
-						if(array_key_exists("noClass", $types_in_annot)){
-							$tmp = $types_in_annot["noClass"];
-							sort($tmp);
-							$_SESSION["ANNOT_GENE_TYPES_LIST"]["noClass"] = $tmp;
-						}
+                        $_SESSION[$id]["ANNOT_GENE_TYPES_LIST"] = $types_in_annot;
+                        if(array_key_exists("noClass", $types_in_annot)){
+                            $tmp = $types_in_annot["noClass"];
+                            sort($tmp);
+                            $_SESSION[$id]["ANNOT_GENE_TYPES_LIST"]["noClass"] = $tmp;
+                        }
                     }
                 }
                 
@@ -188,7 +219,7 @@ function setConfig($file="config.txt"){
                 
                 if(file_exists($value)){
                     
-                    $_SESSION["IMAGE1"] = $value;
+                    $_SESSION[$id]["IMAGE1"] = $value;
                     
                 }
                 
@@ -198,7 +229,7 @@ function setConfig($file="config.txt"){
                 
                 if(file_exists($value)){
                     
-                    $_SESSION["IMAGE2"] = $value;
+                    $_SESSION[$id]["IMAGE2"] = $value;
                     
                 }
                 
@@ -206,7 +237,8 @@ function setConfig($file="config.txt"){
             
             case "TITLE":
                 
-                $_SESSION["TITLE"] = ($value == "") ? "viewR" : $value;
+                $split=explode("=", $LINE);
+                $_SESSION[$id]["TITLE"] = ($split[1] == "") ? "" : $split[1];
                 
                 break;
             
@@ -214,14 +246,109 @@ function setConfig($file="config.txt"){
                 
                 if(file_exists($value)){
                     
-                    $_SESSION["USER_GUIDE"] = $value;
+                    $_SESSION[$id]["USER_GUIDE"] = $value;
                     
                 }
                 
                 break;
+            
+            case "DEFAULT_SAMPLES":
+                
+                $_SESSION[$id]["DEFAULT_SAMPLES"] = ($value == "") ? "condition" : $value;
+                
+                break;
+            
+            case "DEFAULT_VISU":
+                
+                $_SESSION[$id]["DEFAULT_VISU"] = ($value == "") ? "fill" : $value;
+                            
+                break;
+            
+            case "DEFAULT_LINETYPE":
+                
+                $_SESSION[$id]["DEFAULT_LINETYPE"] = ($value == "") ? "solid" : $value;
+                            
+                break;
+            
+            case "DEFAULT_LIBTYPE":
+                                
+                break;
+            
+                $_SESSION[$id]["DEFAULT_LIBTYPE"] = ($value == "") ? "stranded" : $value;
+            
+            case "DEFAULT_SCALE":
+                                
+                break;
+            
+                $_SESSION[$id]["DEFAULT_SCALE"] = ($value == "") ? "linear" : $value;
+                            
+                break;
+            
+            case "DEFAULT_NORM":
+                
+                $_SESSION[$id]["DEFAULT_NORM"] = ($value == "") ? "yes" : $value;
+                            
+                break;
+            
         }
         
     }
+    
+    if(!isset($_SESSION[$id]["DEFAULT_SAMPLES"])){
+        $_SESSION[$id]["DEFAULT_SAMPLES"] = "condition";
+    }
+    
+    if(!isset($_SESSION[$id]["DEFAULT_VISU"])){
+        $_SESSION[$id]["DEFAULT_VISU"] = "fill";
+    }
+    
+    if(!isset($_SESSION[$id]["DEFAULT_LINETYPE"])){
+        $_SESSION[$id]["DEFAULT_LINETYPE"] = "solid";
+    }
+    
+    if(!isset($_SESSION[$id]["DEFAULT_LIBTYPE"])){
+        $_SESSION[$id]["DEFAULT_LIBTYPE"] = "stranded";
+    }
+    
+    if(!isset($_SESSION[$id]["DEFAULT_SCALE"])){
+        $_SESSION[$id]["DEFAULT_SCALE"] = "linear";
+    }
+    
+    if(!isset($_SESSION[$id]["DEFAULT_SAMPLES"])){
+        $_SESSION[$id]["DEFAULT_NORM"] = "yes";
+    }
+    
+    if(!is_null($_SESSION[$id]["DESCRIPTION_DATA"])){
+        
+        $_SESSION[$id]['samples'] = array();
+        
+        foreach(array_keys($_SESSION[$id]["DESCRIPTION_DATA"]) as $cond){
+            if($_SESSION[$id]["DEFAULT_SAMPLES"] == "condition"){
+                array_push($_SESSION[$id]['samples'], $cond);
+                setVisuParam($id = $id, $addParam = True, $visu = $_SESSION[$id]["DEFAULT_VISU"], $lineType = $_SESSION[$id]["DEFAULT_LINETYPE"], $libType = $_SESSION[$id]["DEFAULT_LIBTYPE"], $scale = $_SESSION[$id]["DEFAULT_SCALE"], $norm = $_SESSION[$id]["DEFAULT_NORM"]);
+            } else {
+                foreach($_SESSION[$id]["DESCRIPTION_DATA"][$cond] as $rep){
+                    array_push($_SESSION[$id]['samples'], $rep);
+                    setVisuParam($id = $id, $addParam = True, $visu = $_SESSION[$id]["DEFAULT_VISU"], $lineType = $_SESSION[$id]["DEFAULT_LINETYPE"], $libType = $_SESSION[$id]["DEFAULT_LIBTYPE"], $scale = $_SESSION[$id]["DEFAULT_SCALE"], $norm = $_SESSION[$id]["DEFAULT_NORM"]);
+                }
+            }
+            
+        }
+        
+        $_SESSION[$id]["color"] = array();
+        for($i = 0; $i < count($_SESSION[$id]['samples']); $i++){
+            array_push($_SESSION[$id]["color"], getColor($i));
+        }
+        
+        if($_SESSION[$id]["DEFAULT_SAMPLES"] == "condition"){
+            $_SESSION[$id]["SAMPLE_TYPE"]="condition";
+        } else {
+            $_SESSION[$id]["SAMPLE_TYPE"]="replicates";
+        }
+        
+    }
+    
+    return($id);
     
 }
 
@@ -241,17 +368,17 @@ function getColor($i){
 ## addSampleToSession
 # add content of $_POST["sample"] (if present) to $_SESSION sample
 # initialize $_SESSION["sample"] to array if not set 
-function addSampleToSession(){
+function addSampleToSession($id){
     
-    if(!isset($_SESSION['samples'])){
+    if(!isset($_SESSION[$id]['samples'])){
         
-        $_SESSION['samples'] = array();
+        $_SESSION[$id]['samples'] = array();
         
     } 
     
     if(isset($_POST["sampleToAdd"])){
-        if(!in_array($_POST["sampleToAdd"], $_SESSION['samples'])){
-            array_push($_SESSION['samples'], $_POST["sampleToAdd"]);
+        if(!in_array($_POST["sampleToAdd"], $_SESSION[$id]['samples'])){
+            array_push($_SESSION[$id]['samples'], $_POST["sampleToAdd"]);
         }
     }
     
@@ -262,14 +389,14 @@ function addSampleToSession(){
 # initialize $_SESSION[param] to array if not set
 # set $_SESSION[param] to $_POST[param] if $_POST[param] exists
 # add default visu parameters to $_SESSION if addParam is true
-function setVisuParam($addParam){
+function setVisuParam($id, $addParam, $visu = "heatmap", $lineType = "solid", $libType = "stranded", $scale = "linear", $norm = "yes"){
     
     $defaultVisuParam=array(
-        "visu" => "line", 
-        "lineType" => "solid",
-        "libType" => "stranded",
-        "scale" => "linear",
-        "norm" => "yes"
+        "visu" => $visu, 
+        "lineType" => $lineType,
+        "libType" => $libType,
+        "scale" => $scale,
+        "norm" => $norm
     );
     
     foreach(array("visu", "lineType", "libType", "scale", "norm", "color") as $param){
@@ -278,17 +405,17 @@ function setVisuParam($addParam){
             
             if($param == "color"){
                 
-                $_SESSION[$param] = $_POST[$param];
+                $_SESSION[$id][$param] = $_POST[$param];
                 
                 if($addParam){
                     
-                    array_push($_SESSION[$param], getColor(count($_SESSION[$param])));
+                    array_push($_SESSION[$id][$param], getColor(count($_SESSION[$id][$param])));
                     
                 }
                 
             } else {
                 
-                $_SESSION[$param] = $_POST[$param];
+                $_SESSION[$id][$param] = $_POST[$param];
                 
             }
             
@@ -298,15 +425,15 @@ function setVisuParam($addParam){
                 
                 if($param == "color"){
                     
-                    $_SESSION[$param] = array(0 => getColor(0));
+                    $_SESSION[$id][$param] = array(0 => getColor(0));
                     
                 } else {
                     
-                    $_SESSION[$param] = $defaultVisuParam[$param];
+                    $_SESSION[$id][$param] = $defaultVisuParam[$param];
                     
                 }
                 
-            }
+            } 
             
         }
         
@@ -314,24 +441,24 @@ function setVisuParam($addParam){
     
 }
 
-function removeSampleToSession($i){
+function removeSampleToSession($id, $i){
     
     $samples = array();
     $colors = array();
     
-    for($j = 0; $j < sizeof($_SESSION["samples"]); $j++){
+    for($j = 0; $j < sizeof($_SESSION[$id]["samples"]); $j++){
         
         if($j != $i){
             
-            array_push($samples, $_SESSION["samples"][$j]);
-            array_push($colors, $_SESSION["color"][$j]);
+            array_push($samples, $_SESSION[$id]["samples"][$j]);
+            array_push($colors, $_SESSION[$id]["color"][$j]);
             
         } 
         
     }
     
-    $_SESSION["samples"] = $samples;
-    $_SESSION["color"] = $colors;
+    $_SESSION[$id]["samples"] = $samples;
+    $_SESSION[$id]["color"] = $colors;
     
 }
 
@@ -367,7 +494,7 @@ function printSampleSelector($mainLabel, $values){
     echo "  <div class=\"dropbtn\"><div class=\"dropbtnlabel\" style=\"width:100%;height:100%;text-align:center\">$mainLabel</div>\n";
     echo "  </div>\n";
     echo "  <div class=\"dropdown-content\">\n";
-    foreach(array_keys($values)as $k){
+    foreach(array_keys($values) as $k){
         $val = $values[$k][0];
         $name = $values[$k][1];
          echo "    <button type=\"submit\" name=\"sampleToAdd\" value=\"$val\">$name</button>\n";
@@ -378,26 +505,26 @@ function printSampleSelector($mainLabel, $values){
 }
 
 ## printAllSampleSelector
-function printAllSampleSelectors(){
+function printAllSampleSelectors($id){
     
     echo "<div style=\"position:relative\">\n";
     
     $i = 1;
     
-    foreach(array_keys($_SESSION["DESCRIPTION_DATA"]) as $cond){
+    foreach(array_keys($_SESSION[$id]["DESCRIPTION_DATA"]) as $cond){
         
         if($i == 1){
             echo "<div class=\"navbar\">\n";
         }
         
-        $nRep = count($_SESSION["DESCRIPTION_DATA"][$cond]);
+        $nRep = count($_SESSION[$id]["DESCRIPTION_DATA"][$cond]);
         if($nRep > 1){
             $sampleValues = array(array($cond, "merged"));
-            foreach($_SESSION["DESCRIPTION_DATA"][$cond] as $rep){
+            foreach($_SESSION[$id]["DESCRIPTION_DATA"][$cond] as $rep){
                 array_push($sampleValues, array($rep, $rep));
             }
         } else {
-            $sampleValues = array(array($_SESSION["DESCRIPTION_DATA"][$cond][0], $_SESSION["DESCRIPTION_DATA"][$cond][0]));
+            $sampleValues = array(array($_SESSION[$id]["DESCRIPTION_DATA"][$cond][0], $_SESSION[$id]["DESCRIPTION_DATA"][$cond][0]));
         }
         
         printSampleSelector($cond, $sampleValues);
@@ -445,19 +572,19 @@ function printOneSampleSelected($paramValueSelected, $label, $i){
 
 ## printSampleSelected
 #
-function printSampleSelected(){
+function printSampleSelected($id){
     
     echo "<div style=\"position:relative\">\n";
     
     $j = 1;
-    for($i = 0; $i < sizeof($_SESSION["samples"]); $i++){
+    for($i = 0; $i < sizeof($_SESSION[$id]["samples"]); $i++){
         if($j == 1){
             echo "<div class=\"navbar\">\n";
         }
-        printOneSampleSelected($_SESSION["color"][$i], $_SESSION["samples"][$i], $i);
+        printOneSampleSelected($_SESSION[$id]["color"][$i], $_SESSION[$id]["samples"][$i], $i);
         if($j == 5){
             echo "</div>\n";
-            if(count($_SESSION["color"]) != $j){
+            if(count($_SESSION[$id]["color"]) != $j){
                 echo "<div style=\"width:100%;height:10px\"></div>\n";
             }
             $j = 0;
@@ -502,15 +629,15 @@ function printVisuSelector($paramValues, $paramValueSelected, $inputName, $title
 
 ## printAllVisuSelectors
 #
-function printAllVisuSelectors(){
+function printAllVisuSelectors($id){
     
-    echo "<div style=\"position:relative\">\n";
+    echo "<div style=\"position:relative;padding-bottom:25px;padding-top:10px\">\n";
     
     echo "<div class=\"navbar\">\n";
-    printVisuSelector(array("heatmap", "fill", "line"), $_SESSION["visu"], "visu", "Visualization"); 
-    printVisuSelector(array("stranded", "unstranded"), $_SESSION["libType"], "libType", "Library type"); 
-    printVisuSelector(array("log2", "linear"), $_SESSION["scale"], "scale", "Scale"); 
-    printVisuSelector(array("yes", "no"), $_SESSION["norm"], "norm", "Normalized");
+    printVisuSelector(array("heatmap", "fill", "line"), $_SESSION[$id]["visu"], "visu", "Visualization"); 
+    printVisuSelector(array("stranded", "unstranded"), $_SESSION[$id]["libType"], "libType", "Library type"); 
+    printVisuSelector(array("log2", "linear"), $_SESSION[$id]["scale"], "scale", "Scale"); 
+    printVisuSelector(array("yes", "no"), $_SESSION[$id]["norm"], "norm", "Normalized");
     echo "</div>\n";
     echo "</div>\n";
     
@@ -518,7 +645,7 @@ function printAllVisuSelectors(){
 
 ## printAnnotFeatureSelection
 #
-function printAnnotFeatureSelection($value, $is_open){
+function printAnnotFeatureSelection($id, $value, $is_open){
     
     # selection
     
@@ -592,12 +719,12 @@ function printAnnotFeatureSelection($value, $is_open){
     }
     echo "<input type=\"hidden\" name=\"geneTypeMenuInput\" value=\"$is_open\"/>\n";
     $i = 1;
-    foreach($_SESSION["ANNOT_GENE_TYPES_LIST"]["noClass"] as $type){
+    foreach($_SESSION[$id]["ANNOT_GENE_TYPES_LIST"]["noClass"] as $type){
         if($i == 1){
             echo "<div class=\"navbar\">\n";
         }
-        if(isset($_SESSION["TYPES_TO_SHOW"])){
-            if(!in_array($type, $_SESSION["TYPES_TO_SHOW"])){
+        if(isset($_SESSION[$id]["TYPES_TO_SHOW"])){
+            if(!in_array($type, $_SESSION[$id]["TYPES_TO_SHOW"])){
                 $disabled = "disabled=\"disabled\"";
                 $op=0.3;
             } else {
@@ -672,19 +799,19 @@ function printAnnotFeatureSelection($value, $is_open){
 #  2D array :
 #    (corrected) coord
 #    boolean saying if there is error in coord
-function checkCoord($chr, $coord){
+function checkCoord($id, $chr, $coord){
     
     #$errorMessage = array();
     $error = False;
     
-    if(is_null($chr) or !array_key_exists($chr, $_SESSION["CHR_SIZE"])){
+    if(is_null($chr) or !array_key_exists($chr, $_SESSION[$id]["CHR_SIZE"])){
         
         #array_push($errorMessage, "Invalid chromosome name");
         $error=true;
         
     } else {
         
-        $chr_size = (int)$_SESSION["CHR_SIZE"][$chr];
+        $chr_size = (int)$_SESSION[$id]["CHR_SIZE"][$chr];
         
         $split = explode("-",$coord);
         
@@ -740,7 +867,7 @@ function checkCoord($chr, $coord){
 # out :
 #     print a text box to enter (new) genomic coordinates and submit button
 #     post prev_coord, chromosomme coord & seeCoverage
-function printBrowserCoord($prev_chr=null,$prev_start=null, $prev_stop=null){
+function printBrowserCoord($id, $prev_chr=null,$prev_start=null, $prev_stop=null){
     
     if(!is_null($prev_chr) and !is_null($prev_start) and !is_null($prev_stop)){
         
@@ -763,9 +890,9 @@ function printBrowserCoord($prev_chr=null,$prev_start=null, $prev_stop=null){
     ## chr
     echo "<select name=\"chromosome\">\n";
     
-    if(isset($_SESSION["CHR_SIZE"])){
+    if(isset($_SESSION[$id]["CHR_SIZE"])){
         
-        foreach(array_keys($_SESSION["CHR_SIZE"]) as $chr){
+        foreach(array_keys($_SESSION[$id]["CHR_SIZE"]) as $chr){
             
             $to_print = (!is_null($prev_chr) and $prev_chr == $chr) ? "<option selected>$chr\n" : "<option>$chr\n";
             
@@ -802,7 +929,7 @@ function printBrowserGene($boxSize = null, $prev_chr=null,$prev_start=null, $pre
     #    echo "</div>\n";
     #echo "</div>\n";
     
-    echo "<div style=\"position:relative;float:left;width:100%;height:30px;font-style:italic\">Enter gene name (e.g. RRP6)\n";
+    echo "<div style=\"position:relative;float:left;width:100%;height:30px;font-style:italic\">Enter gene name\n";
     echo "</div>\n";
     
     if(!is_null($prev_chr) and !is_null($prev_start) and !is_null($prev_stop)){
@@ -828,7 +955,7 @@ function printBrowserGene($boxSize = null, $prev_chr=null,$prev_start=null, $pre
 }
 
 ## getGeneCoordFromIndex
-function getGeneCoordFromIndex($ID){
+function getGeneCoordFromIndex($id, $gene_id){
     
     $res=array();
     
@@ -838,9 +965,9 @@ function getGeneCoordFromIndex($ID){
         
     }
     
-    if(file_exists($_SESSION["ANNOT_NAME_INDEX"])){
+    if(file_exists($_SESSION[$id]["ANNOT_NAME_INDEX"])){
         
-        $file=gzopen($_SESSION["ANNOT_NAME_INDEX"], "r");
+        $file=gzopen($_SESSION[$id]["ANNOT_NAME_INDEX"], "r");
         
         $i_gene = 0;
         
@@ -850,7 +977,7 @@ function getGeneCoordFromIndex($ID){
             
             $line = explode("\t", $line);
             
-            $is_gene_in_line = preg_grep("/".trim($ID)."/i", $line);
+            $is_gene_in_line = preg_grep("/".trim($gene_id)."/i", $line);
             
             if(count($is_gene_in_line) > 0){
                 
@@ -886,7 +1013,7 @@ function getGeneCoordFromIndex($ID){
 #  chr (hidden) : gene chromosome
 #  coord (hidden) : gene coordinates
 #  seeCoverage : coord
-function printTableGeneSelection($geneArray, $geneName){
+function printTableGeneSelection($id, $geneArray, $geneName){
     
     $n_genes_found=count($geneArray["Chr"]);
     
@@ -916,7 +1043,7 @@ function printTableGeneSelection($geneArray, $geneName){
         
         $Chr = $geneArray["Chr"][$i_gene];
         
-        $chr_size = $_SESSION["CHR_SIZE"][$Chr];
+        $chr_size = $_SESSION[$id]["CHR_SIZE"][$Chr];
         
         if(!is_null($chr_size)){
             
@@ -941,6 +1068,9 @@ function printTableGeneSelection($geneArray, $geneName){
             echo "<td style=\"width:12.5%\">";
             
             echo "<form method=\"post\" action=\"coverage.php\">\n";
+            
+            # session id
+            echo "<input type=\"hidden\" name=\"sessid\" value=\"$id\">\n";
             
             echo "<input type=\"hidden\" name=\"chromosome\" value=\"$Chr\">\n";
             
@@ -986,9 +1116,9 @@ function printTableGeneSelection($geneArray, $geneName){
 
 
 ## printCoverageMenuPage
-function printCoverageMenuPage(){
+function printCoverageMenuPage($id){
     
-    echo "<div style=\"position:relative;float:left;height:25px;width:100%\"><a href=\"index.php\">&#xAB;back to main page</a></div>\n";
+    echo "<div style=\"position:relative;float:left;height:25px;width:100%;padding:20px 0px 0px 10px\"><a href=\"../index.html\">&#xAB;back to main page</a></div>\n";
     
     echo "<div style=\"clear:both\"></div>\n";
     
@@ -998,109 +1128,117 @@ function printCoverageMenuPage(){
     echo "<button type=\"submit\" style=\"display:none\" disabled></button>\n";
     #echo "</div>\n";
     
-    if(isset($_SESSION["DESCRIPTION_DATA"])){
+    echo "<input type=\"hidden\" name=\"sessid\" value=\"$id\">\n";
+    
+    ## genomic coordinates
+    #echo "<div class=\"hr\">Genomic location</div>\n";
+    echo "<div style=\"position:relative;height:65px;width:100%;padding-top:40px\">\n";
+    echo "<div style=\"position:relative;float:left;width:50%;text-align:center\">\n";
+    printBrowserCoord($id = $id);
+    echo "</div>\n";
+    echo "<div style=\"position:relative;float:left;width:50%;text-align:center\">\n";
+    printBrowserGene();
+    echo "</div>\n";
+    echo "</div>\n"; 
+    
+    ## samples selection
+    echo "<div class=\"hr\">Sample selection</div>\n";
+    echo "<div style=\"text-align:center\">\n";
+    if($_SESSION[$id]["SAMPLE_TYPE"] == "condition"){
+        echo "<div style=\"height:30px\"><input type=\"radio\" id=\"SAMPLE_TYPE\" name=\"SAMPLE_TYPE\" value=\"condition\" checked>conditions</div>\n";
+        echo "<div style=\"height:20px\"><input type=\"radio\" id=\"SAMPLE_TYPE\" name=\"SAMPLE_TYPE\" value=\"replicates\">replicates</div>\n";
+    } elseif($_SESSION[$id]["SAMPLE_TYPE"] == "replicates"){
+        echo "<div style=\"height:30px\"><input type=\"radio\" id=\"SAMPLE_TYPE\" name=\"SAMPLE_TYPE\" value=\"condition\">conditions</div>\n";
+        echo "<div style=\"height:20px\"><input type=\"radio\" id=\"SAMPLE_TYPE\" name=\"SAMPLE_TYPE\" value=\"replicates\" checked>replicates</div>\n";
+    } else {
+        echo "<div style=\"height:30px\"><input type=\"radio\" id=\"SAMPLE_TYPE\" name=\"SAMPLE_TYPE\" value=\"condition\" checked>conditions</div>\n";
+        echo "<div style=\"height:20px\"><input type=\"radio\" id=\"SAMPLE_TYPE\" name=\"SAMPLE_TYPE\" value=\"replicates\">replicates</div>\n";
+    }
+    echo "</div>\n";
+    
+    ## annotation feature selection
+    if(isset($_SESSION[$id]["ANNOT_FILE"]) && isset($_SESSION[$id]["ANNOT_GENE_TYPES_LIST"])){
         
-        echo "<div class=\"hr\">Sample selection</div>\n";
-        
-        echo "<div style=\"position:relative;float:left;margin-left:20px;width:calc(100% - 20px);height:30px;font-style:italic\">\n";
-        echo "Click on sample name to add to selection";
+        echo "<div class=\"hr\">Gene annotation : select gene type to show\n";
         echo "</div>\n";
         
-        printAllSampleSelectors();
+        $value = "all";
+        if(isset($_POST["menuTypeSetInput"])){
+            $value = $_POST["menuTypeSetInput"];
+        }
         
-    } else {
+        $is_open = "no";
+        if(isset($_POST["geneTypeMenuInput"])){
+            $is_open = $_POST["geneTypeMenuInput"];
+        }
         
-        echo "<p>FILE DESCRIPTION_DATA IS MISSING IN CONFIG FILE, OR CANNOT BE FOUND</p>\n";
+        printAnnotFeatureSelection($id = $id, $value, $is_open);
         
+        #echo "<div style=\"clear:both;width:100%\"></div>\n";
+        
+        $collapse="yes";
+        
+        if(isset($_SESSION[$id]["COLLAPSE_TRANSCRIPTS"])){
+            if($_SESSION[$id]["COLLAPSE_TRANSCRIPTS"] == "no"){
+                $collapse = "no";
+            }
+        }
+        
+        #echo "<div style=\"width:100%;position:relative;float:left\">\n";
+        #echo "<div style=\"position:relative;width:50%;text-align:right;float:left\">collapse isoforms</div>\n";
+        
+        #if($collapse=="yes"){
+        #    echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"yes\" checked>yes</div>\n";
+        #    echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"no\">no</div>\n";
+        #} else {
+        #    echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"yes\">yes</div>\n";
+        #    echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"no\" checked>no</div>\n";
+        #}
+        
+        #echo "</div>\n";
+        echo "<div style=\"clear:both;width:100%\"></div>\n";
+    
     }
     
+    # samples selection
+    #if(isset($_SESSION[$id]["DESCRIPTION_DATA"])){
+        
+    #    echo "<div class=\"hr\">Sample selection</div>\n";
+        
+    #    echo "<div style=\"position:relative;float:left;margin-left:20px;width:calc(100% - 20px);height:30px;font-style:italic\">\n";
+    #    echo "Click on sample name to add to selection";
+    #    echo "</div>\n";
+        
+    #    printAllSampleSelectors($id = $id);
+        
+    #} else {
+        
+    #    echo "<p>FILE DESCRIPTION_DATA IS MISSING IN CONFIG FILE, OR CANNOT BE FOUND</p>\n";
+        
+    #}
+    
     ## if sample selected, show visualization parameter and genomic coordinates selection 
-    if(!empty($_SESSION["samples"])){
+    #if(!empty($_SESSION[$id]["samples"])){
         
         echo "<div class=\"hr\">Visualization options</div>\n";
         
         ## samples selected
         
-        echo "<div style=\"position:relative;float:left;margin-left:20px;width:calc(100% - 20px);height:30px;font-style:italic\">\n";
-        echo "Click on sample to change color (for line visualization) and on the cross to remove it";
-        echo "</div>\n";
+    #    echo "<div style=\"position:relative;float:left;margin-left:20px;width:calc(100% - 20px);height:30px;font-style:italic\">\n";
+    #    echo "Click on sample to change color (for line visualization) and on the cross to remove it";
+    #    echo "</div>\n";
         
-        printSampleSelected();
+    #    printSampleSelected($id = $id);
         
         ## visu param selection
         
-        echo "<div style=\"position:relative;float:left;margin:20px 0 0 20px;width:calc(100% - 20px);height:30px;font-style:italic\">\n";
-        echo "Select visualization option";
-        echo "</div>\n";
+        #echo "<div style=\"position:relative;float:left;margin:20px 0 0 20px;width:calc(100% - 20px);height:30px;font-style:italic\">\n";
+        #echo "Select visualization option";
+        #echo "</div>\n";
         
-        printAllVisuSelectors();
+        printAllVisuSelectors($id = $id);
         
-        #echo "<div style=\"clear:both;width:100%;height:10px\"></div>\n";
-        
-        ## annotation feature selection
-        if(isset($_SESSION["ANNOT_FILE"]) && isset($_SESSION["ANNOT_GENE_TYPES_LIST"])){
-            
-            echo "<div class=\"hr\">Gene annotation : select gene type to show\n";
-            #echo "<div class=\"tooltip\">Annotation visualization selection\n";
-            #echo "<span class=\"tooltiptext\" style=\"width:300px\">Select annotation features for display</span>\n";
-            #echo "</div>\n";
-            echo "</div>\n";
-            
-            $value = "all";
-            if(isset($_POST["menuTypeSetInput"])){
-                $value = $_POST["menuTypeSetInput"];
-            }
-            
-            $is_open = "no";
-            if(isset($_POST["geneTypeMenuInput"])){
-                $is_open = $_POST["geneTypeMenuInput"];
-            }
-            
-            printAnnotFeatureSelection($value, $is_open);
-            
-            echo "<div style=\"clear:both;width:100%\"></div>\n";
-            
-            $collapse="yes";
-            
-            if(isset($_SESSION["COLLAPSE_TRANSCRIPTS"])){
-				if($_SESSION["COLLAPSE_TRANSCRIPTS"] == "no"){
-					$collapse = "no";
-				}
-			}
-            
-            echo "<div style=\"width:100%;position:relative;float:left\">\n";
-            echo "<div style=\"position:relative;width:50%;text-align:right;float:left\">collapse isoforms</div>\n";
-            if($collapse=="yes"){
-				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"yes\" checked>yes</div>\n";
-				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"no\">no</div>\n";
-			} else {
-				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"yes\">yes</div>\n";
-				echo "<div style=\"position:relative;width:5%;text-align:right;float:left\"><input type=\"radio\" name=\"collapse_transcripts\" value=\"no\" checked>no</div>\n";
-			}
-            echo "</div>\n";
-            
-            echo "<div style=\"clear:both;width:100%\"></div>\n";
-        }
-        
-        #echo "<div style=\"clear:both;width:100%\"></div>\n";
-        
-        ## genomic coordinates
-        
-        echo "<div class=\"hr\">Genomic location</div>\n";
-        
-        echo "<div style=\"position:relative;height:75px;width:100%;margin-bottom:25px\">\n";
-        
-        echo "<div style=\"position:relative;float:left;width:50%;text-align:center\">\n";
-        printBrowserCoord();
-        echo "</div>\n";
-        
-        echo "<div style=\"position:relative;float:left;width:50%;text-align:center\">\n";
-        printBrowserGene();
-        echo "</div>\n";
-        
-        echo "</div>\n"; 
-        
-    }
+    #}
     
     printDropdownJS();
     
@@ -1131,11 +1269,11 @@ function printCoverageMenuPage(){
 ##     which    : left or right. Go left or rightward along genome?
 ## out : 
 ##     print browser arrow to navigate along genome, and give hidden form
-function printBrowserArrow($chr_, $start_, $stop_, $which){
+function printBrowserArrow($id, $chr_, $start_, $stop_, $which){
     
     $span=(int)(($stop_-$start_+1)/2);
     
-    $chr_size = $_SESSION["CHR_SIZE"][$chr_];
+    $chr_size = $_SESSION[$id]["CHR_SIZE"][$chr_];
     
     ## set new coord : add half window width
     if($which=="left"){
@@ -1166,6 +1304,9 @@ function printBrowserArrow($chr_, $start_, $stop_, $which){
     $coord_new=$start_new."-".$stop_new;
     
     echo "<form method=\"post\" action=\"coverage.php\">\n";
+    
+    ## session id
+    echo "<input type=\"hidden\" name=\"sessid\" value=\"$id\">\n";
     
     ## chr
     echo "<input type=\"hidden\" name=\"chromosome\" value=\"$chr_\">\n";
@@ -1198,11 +1339,11 @@ function printBrowserArrow($chr_, $start_, $stop_, $which){
 
 
 ## printBrowserZoom
-function printBrowserZoom($chr_, $start_, $stop_, $zoom){
+function printBrowserZoom($id, $chr_, $start_, $stop_, $zoom){
     
     $span=(int)($stop_ - $start_-1);
     
-    $chr_size = $_SESSION["CHR_SIZE"][$chr_];
+    $chr_size = $_SESSION[$id]["CHR_SIZE"][$chr_];
     
     $spanFrac=round($span/4);
     
@@ -1244,6 +1385,9 @@ function printBrowserZoom($chr_, $start_, $stop_, $zoom){
         $coord_new=$start_new."-".$stop_new;
         
         echo "<form method=\"post\" action=\"coverage.php\">\n";
+        
+        ## session id
+        echo "<input type=\"hidden\" name=\"sessid\" value=\"$id\">\n";
         
         ## chr
         echo "<input type=\"hidden\" name=\"chromosome\" value=\"$chr_\">\n";
@@ -1303,9 +1447,17 @@ function printHTMLTable($table, $isHeader) {
 
 
 ## printCoverage
-function printCoverage($chr, $start, $stop){ 
+function printCoverage($id, $chr, $start, $stop){ 
     
-    echo "<div style=\"position:relative;float:left;height:25px;width:100%\"><a href=\"coverage.php\">&#xAB;back to menu</a></div>\n";
+    echo "<form method=\"post\" action=\"coverage.php\">\n";
+    
+    # session id
+    echo "<input type=\"hidden\" name=\"sessid\" value=\"$id\">\n";
+    #echo "<div style=\"position:relative;float:left;height:25px;width:100%\"><a href=\"coverage.php\">&#xAB;back to menu</a></div>\n";
+    echo "<div style=\"position:relative;float:left;height:25px;width:100%;padding:20px 0px 0px 10px\">\n";
+    echo "<button class=\"button_nav\" type=\"submit\">&#xAB;back to menu</button>\n";
+    echo "</div>\n";
+    echo "</form>\n";
     
     ## navbar 1
     echo "<div style=\"position:relative;float:left;height:75px;width:100%\">\n";
@@ -1315,7 +1467,9 @@ function printCoverage($chr, $start, $stop){
     
     echo "<form method=\"post\" action=\"coverage.php\">\n";
     
-    printBrowserCoord($chr, $start, $stop);
+    echo "<input type=\"hidden\" name=\"sessid\" value=\"$id\">\n";
+    
+    printBrowserCoord($id, $chr, $start, $stop);
     
     echo "</form>\n";
     
@@ -1326,12 +1480,14 @@ function printCoverage($chr, $start, $stop){
     
     echo "<form method=\"post\" action=\"coverage.php\">\n";
     
+    echo "<input type=\"hidden\" name=\"sessid\" value=\"$id\">\n";
+    
     printBrowserGene($boxSize = 15, $prev_chr = $chr, $prev_start = $start, $prev_stop = $stop);
     
     echo "</form>\n";
     
     echo "</div>\n";
-	
+    
     echo "</div>\n"; ## end navbar1
     
     echo "<div style=\"clear:both;width:100%\">\n";
@@ -1339,32 +1495,32 @@ function printCoverage($chr, $start, $stop){
     echo "<hr style=\"color:#A0A0A0\">\n";
     
     echo "</div>\n";
-	
-	## navbar 2
-	
-	echo "<div style=\"position:relative;float:left;height:50px;width:100%\">\n";
-	
+    
+    ## navbar 2
+    
+    echo "<div style=\"position:relative;float:left;height:50px;width:100%\">\n";
+    
     ## to go left 
     echo "<div style=\"position:relative;float:left;width:35%;height:100%\">\n";
     
     if($start > 1){
         
-        printBrowserArrow($chr_=$chr, $start_=$start, $stop_=$stop, $which="left");
+        printBrowserArrow($id = $id, $chr_=$chr, $start_=$start, $stop_=$stop, $which="left");
         
     }
     
     echo "</div>\n";
-	
+    
     ## zoom & genomic location
     echo "<div style=\"position:relative;float:left;height:50px;width:30%\">\n";
     
-		printBrowserZoom($chr_=$chr, $start_=$start, $stop_=$stop, $zoom="out");
+    printBrowserZoom($id = $id, $chr_=$chr, $start_=$start, $stop_=$stop, $zoom="out");
     
-		echo "<div style=\"position:relative;float:left;height:25px;width:30%;text-align:center\">Zoom</div>\n";
+    echo "<div style=\"position:relative;float:left;height:25px;width:30%;text-align:center\">Zoom</div>\n";
     
-		printBrowserZoom($chr_=$chr, $start_=$start, $stop_=$stop, $zoom="in");
+    printBrowserZoom($id = $id, $chr_=$chr, $start_=$start, $stop_=$stop, $zoom="in");
     
-		echo "<div style=\"position:relative;float:left;height:20px;padding-top:5px;width:100%;text-align:center\">$chr : $start - $stop</div>\n";
+    echo "<div style=\"position:relative;float:left;height:20px;padding-top:5px;width:100%;text-align:center\">$chr : $start - $stop</div>\n";
     
     echo "</div>\n";
 
@@ -1372,9 +1528,9 @@ function printCoverage($chr, $start, $stop){
     
     echo "<div style=\"position:relative;float:left;width:35%;height:100%\">\n";
     
-    if($start < $_SESSION["CHR_SIZE"][$chr] && $stop < $_SESSION["CHR_SIZE"][$chr]){
+    if($start < $_SESSION[$id]["CHR_SIZE"][$chr] && $stop < $_SESSION[$id]["CHR_SIZE"][$chr]){
         
-        printBrowserArrow($chr_=$chr, $start_=$start, $stop_=$stop, $which="right");
+        printBrowserArrow($id = $id, $chr_=$chr, $start_=$start, $stop_=$stop, $which="right");
         
     }
     echo "</div>\n";
@@ -1383,37 +1539,37 @@ function printCoverage($chr, $start, $stop){
     
     ## show coverage and annot
     
-    $samples=implode(",", $_SESSION['samples']);
+    $samples=implode(",", $_SESSION[$id]['samples']);
     
-    $visu=$_SESSION['visu'];
+    $visu=$_SESSION[$id]['visu'];
     
-    $scale=$_SESSION['scale'];
+    $scale=$_SESSION[$id]['scale'];
     
-    $libType=$_SESSION['libType'];
+    $libType=$_SESSION[$id]['libType'];
     
-    $norm=$_SESSION['norm'];
+    $norm=$_SESSION[$id]['norm'];
     
-    $color=implode(",", $_SESSION['color']);
+    $color=implode(",", $_SESSION[$id]['color']);
     
-    $lineType=$_SESSION['lineType'];
+    $lineType=$_SESSION[$id]['lineType'];
     
-    $pythonPath=$_SESSION['PYTHON_PATH'];
+    $pythonPath=$_SESSION[$id]['PYTHON_PATH'];
     
-    #$scriptDir=$_SESSION['SCRIPTS_DIR'];
+    $scriptDir=$_SESSION['SCRIPTS_DIR'];
     
-    $annotFile=$_SESSION['ANNOT_FILE'];
+    $annotFile=$_SESSION[$id]['ANNOT_FILE'];
     
-    $descriptionDataFile=$_SESSION['DESCRIPTION_DATA_FILE'];
+    $descriptionDataFile=$_SESSION[$id]['DESCRIPTION_DATA_FILE'];
     
-    $types_to_show = isset($_SESSION['TYPES_TO_SHOW']) ? implode(",", $_SESSION['TYPES_TO_SHOW']) : "";
+    $types_to_show = isset($_SESSION[$id]['TYPES_TO_SHOW']) ? implode(",", $_SESSION[$id]['TYPES_TO_SHOW']) : "";
     
     $show_transcript_name = "no";
 	$collapse_transcripts = "yes";
 	
-    if(isset($_SESSION["COLLAPSE_TRANSCRIPTS"])){
+    if(isset($_SESSION[$id]["COLLAPSE_TRANSCRIPTS"])){
 		
-		$show_transcript_name = $_SESSION["SHOW_TRANSCRIPT_NAME"];
-		$collapse_transcripts = $_SESSION["COLLAPSE_TRANSCRIPTS"];
+		$show_transcript_name = $_SESSION[$id]["SHOW_TRANSCRIPT_NAME"];
+		$collapse_transcripts = $_SESSION[$id]["COLLAPSE_TRANSCRIPTS"];
 		
 	} 
 	
@@ -1451,8 +1607,8 @@ function printCoverage($chr, $start, $stop){
         $window_height="200px";
         
     }
-    
-    echo "<div id=\"coverage\" style=\"height:$window_height;\"></div>\n";
+        
+    echo "<div id=\"coverage\" style=\"height:$window_height;overflow:auto\"></div>\n";
     
     echo "
         <script>
