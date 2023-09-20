@@ -57,14 +57,14 @@
         echo "            </div>\n";
         echo "            <div style=\"width:6%;float:left;text-align:center;font-size:35px\">|</div> \n";
         echo "            <div style=\"width:47%;float:left;text-align:left;font-size:35px\">\n";
-        echo "            <button class=\"button_nav\" type=\"submit\">Start</button>\n";
+        echo "            <button class=\"button_nav\" type=\"submit\" style=\"font-size:35px\">Start</button>\n";
         #echo "            <a style=\"color:black;text-decoration: none\" href=\"coverage.php\">Start</a>\n";
         echo "            </div>\n";
         
     } else {
         
         echo "            <div style=\"width:95%;float:left;text-align:center;font-size:35px\">\n";
-        echo "            <button class=\"button_nav\" type=\"submit\">Start</button>\n";
+        echo "            <button class=\"button_nav\" type=\"submit\" style=\"font-size:35px\">Start</button>\n";
         #echo "            <a style=\"color:black;text-decoration: none\" href=\"coverage.php\">Start</a>\n";
         echo "            </div>\n";
         
