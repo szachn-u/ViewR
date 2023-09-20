@@ -23,8 +23,8 @@ git clone https://github.com/szachn-u/ViewR.git
 ```
 #### 2. Edit description file
 Edit **description.tsv**, a tab separated file, with header, one sample per line:  
- - file_F : path to the bigWig file for the reads from the forward strand (or all reads, if the library is unstranded, e.g. like ChIP-seq).  
- - file_R : path to the bigWig file for the reads from the reverse strand (for strand-specific libraries only).  
+ - file_F : name of the bigWig file for the reads from the forward strand (or all reads, if the library is unstranded, e.g. like ChIP-seq).  
+ - file_R : name of the bigWig file for the reads from the reverse strand (for strand-specific libraries only).  
  - replicate_name : short name for the sample.  
  - cond_name : condition of the sample.  
  - norm_coeff : normalisation factor. The coverage will be **multiplied** by this value if normalized data are asked.  
@@ -33,13 +33,14 @@ Edit **description.tsv**, a tab separated file, with header, one sample per line
 ```
 cd ViewR
 # requires bedtools and htslib to be installed
-./conf.sh --description /path/to/description.tsv --annot my_annot.gtf --genome_info genome_info.tsv --out_dir /path/to/myViewR --python_path /path/to/python
+./conf.sh --description /path/to/description.tsv --bw_dir /path/to/bw_files --annot my_annot.gtf --genome_info genome_info.tsv --out_dir /path/to/myViewR --python_path /path/to/python
 ```
 - **description.tsv**, the file edited previously
-- **my_annot.gtf** should be in gtf format, with gene_id, gene_type and gene_name in the attribute column (9th)
-- **genome_info.tsv** is a tab separated file, without header, with chromosome names (as in bigWig files) and chromosome sizes
+- **bw_dir**, the directory where are stored the bigWig files
+- **my_annot.gtf**, gene annotation file, should be in gtf format, with gene_id, gene_type and gene_name in the attribute column (9th)
+- **genome_info.tsv**, a tab separated file, without header, with chromosome names (as in bigWig files) and chromosome sizes
 - **/path/to/myViewR**, the directory to store your ViewR files
-- **/path/to/python** refers to your python, with pybigWig and pytabix installed
+- **/path/to/python**, refers to your python path, with pybigWig and pytabix installed
   
 #### 4. Copy the output of ./conf.sh on the server
 ```
