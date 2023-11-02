@@ -40,8 +40,8 @@ function setConfig($file="config.txt"){
         $name=$split[0];
         
         $value=preg_replace('/\s+/', '', $split[1]);
-                
-        switch($name){
+        
+	switch($name){
             
             case "PYTHON_PATH":
                 
@@ -511,7 +511,7 @@ function printAllSampleSelectors($id){
         
         if($i == 5){
             echo "</div>\n"; # close navbar
-	    echo "<hr style=\"clear:both;visibility:hidden\">\n";
+            echo "<hr style=\"clear:both;visibility:hidden\">\n";
             $i = 0;
         }
         $i = $i + 1;
@@ -1537,16 +1537,16 @@ function printCoverage($id, $chr, $start, $stop){
     $types_to_show = isset($_SESSION[$id]['TYPES_TO_SHOW']) ? implode(",", $_SESSION[$id]['TYPES_TO_SHOW']) : "";
     
     $show_transcript_name = "no";
-	$collapse_transcripts = "yes";
-	
+    $collapse_transcripts = "yes";
+    
     if(isset($_SESSION[$id]["COLLAPSE_TRANSCRIPTS"])){
-		
-		$show_transcript_name = $_SESSION[$id]["SHOW_TRANSCRIPT_NAME"];
-		$collapse_transcripts = $_SESSION[$id]["COLLAPSE_TRANSCRIPTS"];
-		
-	} 
-	
-	#$show_transcript_name = isset($_SESSION["SHOW_TRANSCRIPT_NAME"]) ? $_SESSION["SHOW_TRANSCRIPT_NAME"] : "no";
+        
+        $show_transcript_name = $_SESSION[$id]["SHOW_TRANSCRIPT_NAME"];
+        $collapse_transcripts = $_SESSION[$id]["COLLAPSE_TRANSCRIPTS"];
+        
+    } 
+    
+    #$show_transcript_name = isset($_SESSION["SHOW_TRANSCRIPT_NAME"]) ? $_SESSION["SHOW_TRANSCRIPT_NAME"] : "no";
     #$collapse_transcripts =  isset($_SESSION["COLLAPSE_TRANSCRIPTS"]) ? $_SESSION["COLLAPSE_TRANSCRIPTS"] : "yes";
     
     # protect variables
